@@ -1,6 +1,8 @@
 package com.avtarkhalsa.lvexample.activities;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +11,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.avtarkhalsa.lvexample.LVExampleApplication;
 import com.avtarkhalsa.lvexample.R;
+import com.avtarkhalsa.lvexample.managers.QuestionManager;
+import com.avtarkhalsa.lvexample.models.BaseQuestion;
 import com.avtarkhalsa.lvexample.networking.APIInterface;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
 import com.google.gson.Gson;
@@ -20,21 +25,27 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.reactivex.MaybeObserver;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
     @Inject
-    APIInterface apiInterface;
+    QuestionManager questionManager;
 
-    @Inject
-    Gson gson;
+    @BindView(R.id.question_label)
+    TextView question_label;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((LVExampleApplication) getApplication()).getAppComponent().inject(this);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -46,6 +57,34 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        loadQuestion();
+
+    }
+    private void loadQuestion(){
+        questionManager.loadNextQuestion()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<BaseQuestion>() {
+                    @Override
+                    public void accept(BaseQuestion baseQuestion) throws Exception {
+                        renderQuestion(baseQuestion);
+                    }
+                });
+    }
+    private void renderQuestion(BaseQuestion bq){
+        if (bq == null){
+            Log.v("avtar-logger", "null question ?");
+            return;
+        }
+        Log.v("avtar-logger", "rendering question: "+bq.getQuestionLabel());
+        question_label.setText(bq.getQuestionLabel());
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadQuestion();
+            }
+        }, 5000);
     }
 
     @Override

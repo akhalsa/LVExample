@@ -12,4 +12,16 @@ public class NetworkQuestion {
     String question_label;
 
     ArrayList<String> choices; //may be null
+
+    public String getQuestion_type() {
+        return question_type;
+    }
+
+    public String getQuestion_label() {
+        return question_label;
+    }
+
+    public ArrayList<String> getChoices() {
+        return choices;
+    }
 }
