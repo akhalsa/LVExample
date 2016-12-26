@@ -1,6 +1,8 @@
 package com.avtarkhalsa.lvexample.networking;
 
 import android.content.Context;
+import android.os.Looper;
+import android.util.Log;
 
 import com.avtarkhalsa.lvexample.R;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
@@ -15,8 +17,10 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 
 /**
  * Created by avtarkhalsa on 12/25/16.
@@ -46,6 +50,11 @@ public class MockAPIInterface implements APIInterface {
     }
     @Override
     public Observable<List<NetworkQuestion>> getAllQuestions() {
-        return Observable.just(mockResponse);
+        return Observable.defer(new Callable<ObservableSource<List<NetworkQuestion>>>() {
+            @Override
+            public ObservableSource<List<NetworkQuestion>> call() throws Exception {
+                return Observable.just(mockResponse);
+            }
+        });
     }
 }
