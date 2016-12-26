@@ -29,7 +29,7 @@
   },
   {
     "question_type":"Multi Select",
-    "question_label": "What do you worry the most about?"
+    "question_label": "What do you worry the most about?",
     "options":[
       "Saving for Retirement",
       "Paying Off Debt",
