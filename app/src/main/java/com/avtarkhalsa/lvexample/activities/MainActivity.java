@@ -1,19 +1,35 @@
-package com.avtarkhalsa.lvexample;
+package com.avtarkhalsa.lvexample.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.avtarkhalsa.lvexample.LVExampleApplication;
+import com.avtarkhalsa.lvexample.R;
+import com.avtarkhalsa.lvexample.networking.APIInterface;
+import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import io.reactivex.Observer;
+import io.reactivex.functions.Consumer;
+
 public class MainActivity extends AppCompatActivity {
+    @Inject
+    APIInterface apiInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((LVExampleApplication) getApplication()).getAPIComponent().inject(this);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -26,6 +42,13 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        apiInterface.getAllQuestions()
+                .subscribe(new Consumer<List<NetworkQuestion>>(){
+                    @Override
+                    public void accept(List<NetworkQuestion> networkQuestions) throws Exception {
+                        Log.v("avtar-logger", "we got network questions count: "+networkQuestions.size());
+                    }
+                });
     }
 
     @Override
