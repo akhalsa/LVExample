@@ -14,6 +14,7 @@ import com.avtarkhalsa.lvexample.LVExampleApplication;
 import com.avtarkhalsa.lvexample.R;
 import com.avtarkhalsa.lvexample.networking.APIInterface;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -26,10 +27,13 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     APIInterface apiInterface;
 
+    @Inject
+    Gson gson;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((LVExampleApplication) getApplication()).getAPIComponent().inject(this);
+        ((LVExampleApplication) getApplication()).getAppComponent().inject(this);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -42,13 +46,6 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-        apiInterface.getAllQuestions()
-                .subscribe(new Consumer<List<NetworkQuestion>>(){
-                    @Override
-                    public void accept(List<NetworkQuestion> networkQuestions) throws Exception {
-                        Log.v("avtar-logger", "we got network questions count: "+networkQuestions.size());
-                    }
-                });
     }
 
     @Override

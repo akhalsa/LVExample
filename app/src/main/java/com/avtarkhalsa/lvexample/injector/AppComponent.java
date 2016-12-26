@@ -14,6 +14,6 @@ import dagger.Component;
 
 @Singleton
 @Component(modules={AppModule.class, APIModule.class})
-public interface APIComponent {
+public interface AppComponent {
     void inject(MainActivity activity);
 }
