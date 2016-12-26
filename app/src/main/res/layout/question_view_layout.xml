@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <TextView
+        android:id="@+id/question_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="What is your monthly salary"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/numerical_input"
+        android:inputType="numberDecimal"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textual_input"
+        android:inputType="text"/>
+
+
+</merge>

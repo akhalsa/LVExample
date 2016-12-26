@@ -1,10 +1,43 @@
 [
   {
     "question_type" : "Textual",
-    "question_label" : "This is a test text question?"
+    "question_label" : "What's your name?"
   },
   {
     "question_type" : "Numerical",
-    "question_label" : "This is a test numerical question?"
+    "question_label" : "What's your age?"
+  },
+  {
+    "question_type":"Textual",
+    "question_label":"What's your job title?"
+  },
+  {
+    "question_type":"Single Select",
+    "question_label":"Are you married?"
+    "options":[
+      "Yes",
+      "No"
+      ]
+  },
+  {
+    "question_type":"Textual",
+    "question_label":"Where do you live?"
+  },
+  {
+    "question_type":"Numerical",
+    "question_label":"What is your monthly salary?"
+  },
+  {
+    "question_type":"Multi Select",
+    "question_label": "What do you worry the most about?"
+    "options":[
+      "Saving for Retirement",
+      "Paying Off Debt",
+      "Buying a Home",
+      "Getting Married",
+      "Budgeting Better",
+      "Investing",
+      "Earning More"
+    ]
   }
 ]
