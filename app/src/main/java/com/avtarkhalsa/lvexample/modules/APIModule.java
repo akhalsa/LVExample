@@ -30,6 +30,14 @@ public class APIModule {
      * There are better ways to do this if you only want to use the mock data in test code, but since we want to be
      * able to run it as though the mocked responses are coming from a server, this seems simplest
      */
+
+    String baseUrl;
+
+    // Constructor needs one parameter to instantiate.
+    public APIModule(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
     @Provides
     @Singleton
     Cache provideOkHttpCache(Application application) {
@@ -54,7 +62,7 @@ public class APIModule {
 
     /*@Provides
     @Singleton
-    APIInterface provideRealInterface(Gson gson, OkHttpClient okHttpClient, String baseUrl) {
+    APIInterface provideRealInterface(Gson gson, OkHttpClient okHttpClient) {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl(baseUrl)
