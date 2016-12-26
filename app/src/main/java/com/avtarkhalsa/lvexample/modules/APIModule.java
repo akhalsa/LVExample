@@ -25,7 +25,7 @@ public class APIModule {
     /**
      * Most of these are not necessary until you actually swap out the mock response with a real response
      * That said, its good to keep infrastructure like this in place. All that would be needed to switch to a real server would
-     * be to uncomment the provideRetrofit method
+     * be to uncomment the provideRealInterface method and to comment out the provideFakeInterface method
      *
      * There are better ways to do this if you only want to use the mock data in test code, but since we want to be
      * able to run it as though the mocked responses are coming from a server, this seems simplest
@@ -51,9 +51,6 @@ public class APIModule {
     OkHttpClient provideOkHttpClient(Cache cache) {
         return new OkHttpClient.Builder().cache(cache).build();
     }
-
-    //uncomment this, and comment out the provideFakeInterface method to switch to an actual server
-    //you would also need to supply a baseUrl
 
     /*@Provides
     @Singleton
