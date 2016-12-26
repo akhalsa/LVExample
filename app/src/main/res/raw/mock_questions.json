@@ -13,7 +13,7 @@
   },
   {
     "question_type":"Single Select",
-    "question_label":"Are you married?"
+    "question_label":"Are you married?",
     "options":[
       "Yes",
       "No"
