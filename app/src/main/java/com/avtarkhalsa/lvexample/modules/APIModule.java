@@ -26,6 +26,9 @@ public class APIModule {
      * Most of these are not necessary until you actually swap out the mock response with a real response
      * That said, its good to keep infrastructure like this in place. All that would be needed to switch to a real server would
      * be to uncomment the provideRetrofit method
+     *
+     * There are better ways to do this if you only want to use the mock data in test code, but since we want to be
+     * able to run it as though the mocked responses are coming from a server, this seems simplest
      */
     @Provides
     @Singleton
