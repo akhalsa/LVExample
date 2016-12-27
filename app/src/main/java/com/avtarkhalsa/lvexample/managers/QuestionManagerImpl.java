@@ -44,7 +44,5 @@ public class QuestionManagerImpl implements QuestionManager {
         currentQuestion++;
         return networkStream.elementAt((long)i);
     }
-
-
 }
 

@@ -1,6 +1,8 @@
 package com.avtarkhalsa.lvexample.views;
 
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
@@ -25,9 +27,6 @@ public class QuestionView extends LinearLayout {
         String getLabel();
         QuestionType getType();
         List<String> getChoices();
-        void setStringResponse(String response);
-        void setNumberResponse(double response);
-        void setChoices(int[] choice_index);
     }
 
     @BindView(R.id.question_label)
@@ -42,6 +41,9 @@ public class QuestionView extends LinearLayout {
     @BindView(R.id.single_select_input)
     RadioGroup singleSelectInput;
 
+    @BindView(R.id.multi_select_input)
+    RecyclerView multiSelectInput;
+
     private ViewModel viewModel;
 
     public QuestionView(Context context, AttributeSet attrs) {
@@ -52,6 +54,7 @@ public class QuestionView extends LinearLayout {
     private void init() {
         inflate(getContext(), R.layout.question_view_layout, this);
         ButterKnife.bind(this);
+        multiSelectInput.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     public void bindToQuestion(ViewModel vm){
@@ -69,6 +72,10 @@ public class QuestionView extends LinearLayout {
                 singleSelectInput.setVisibility(View.VISIBLE);
                 populateSingleSelect(vm);
                 break;
+            case MultiSelect:
+                multiSelectInput.setVisibility(View.VISIBLE);
+                populateMultiSelect(vm);
+                break;
 
         }
     }
@@ -81,10 +88,17 @@ public class QuestionView extends LinearLayout {
             singleSelectInput.addView(rb);
         }
     }
+
+    private void populateMultiSelect(ViewModel vm){
+        multiSelectInput.setAdapter(new MultiSelectAdapter(vm.getChoices()));
+    }
     private void hideAllInputs(){
         numericalInput.setVisibility(View.GONE);
         textualInput.setVisibility(View.GONE);
         singleSelectInput.removeAllViews();
         singleSelectInput.setVisibility(View.GONE);
+        multiSelectInput.setVisibility(View.GONE);
     }
+
+
 }
