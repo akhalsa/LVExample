@@ -15,13 +15,11 @@ import io.reactivex.schedulers.Schedulers;
  * Created by avtarkhalsa on 12/25/16.
  */
 public class QuestionManagerImpl implements QuestionManager {
-    private APIInterface apiInterface;
     private Observable<Question> networkStream;
 
     private int currentQuestion;
     private int questionsLength;
     public QuestionManagerImpl(APIInterface api){
-        apiInterface = api;
         networkStream = api.getAllQuestions()
                 .subscribeOn(Schedulers.io())
                 .flatMap(new Function<List<NetworkQuestion>, Observable<NetworkQuestion>>() {
