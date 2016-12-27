@@ -19,6 +19,7 @@ import com.avtarkhalsa.lvexample.managers.QuestionManager;
 import com.avtarkhalsa.lvexample.models.BaseQuestion;
 import com.avtarkhalsa.lvexample.networking.APIInterface;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
+import com.avtarkhalsa.lvexample.views.QuestionView;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -37,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     QuestionManager questionManager;
 
-    @BindView(R.id.question_label)
-    TextView question_label;
+    @BindView(R.id.question_view)
+    QuestionView questionView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
     private void renderQuestion(BaseQuestion bq){
-        if (bq == null){
-            Log.v("avtar-logger", "null question ?");
-            return;
-        }
-        Log.v("avtar-logger", "rendering question: "+bq.getQuestionLabel());
-        question_label.setText(bq.getQuestionLabel());
+        questionView.bindToQuestion(bq);
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override

@@ -7,5 +7,7 @@ public class TextualQuestion extends BaseQuestion{
 
     public TextualQuestion(String label){
         super(label);
+        questionType = QuestionType.Textual;
     }
+
 }
