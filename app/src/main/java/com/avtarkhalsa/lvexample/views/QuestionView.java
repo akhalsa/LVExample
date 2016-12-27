@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.avtarkhalsa.lvexample.R;
@@ -37,6 +39,9 @@ public class QuestionView extends LinearLayout {
     @BindView(R.id.textual_input)
     EditText textualInput;
 
+    @BindView(R.id.single_select_input)
+    RadioGroup singleSelectInput;
+
     private ViewModel viewModel;
 
     public QuestionView(Context context, AttributeSet attrs) {
@@ -60,12 +65,26 @@ public class QuestionView extends LinearLayout {
             case Numerical:
                 numericalInput.setVisibility(View.VISIBLE);
                 break;
+            case SingleSelect:
+                singleSelectInput.setVisibility(View.VISIBLE);
+                populateSingleSelect(vm);
+                break;
+
         }
     }
 
+    private void populateSingleSelect(ViewModel vm){
+        for (int i =0; i<vm.getChoices().size(); i++){
+            String choice = vm.getChoices().get(i);
+            RadioButton rb = new RadioButton(this.getContext());
+            rb.setText(choice);
+            singleSelectInput.addView(rb);
+        }
+    }
     private void hideAllInputs(){
         numericalInput.setVisibility(View.GONE);
         textualInput.setVisibility(View.GONE);
-
+        singleSelectInput.removeAllViews();
+        singleSelectInput.setVisibility(View.GONE);
     }
 }
