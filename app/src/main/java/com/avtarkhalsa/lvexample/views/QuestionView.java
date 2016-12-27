@@ -20,6 +20,7 @@ public class QuestionView extends LinearLayout {
     public interface ViewModel{
         String getLabel();
         QuestionType getType();
+        
         void setStringResponse(String response);
         void setNumberResponse(double response);
         void setChoices(int[] choice_index);

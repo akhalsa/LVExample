@@ -14,7 +14,7 @@
   {
     "question_type":"Single Select",
     "question_label":"Are you married?",
-    "options":[
+    "choices":[
       "Yes",
       "No"
       ]
@@ -30,7 +30,7 @@
   {
     "question_type":"Multi Select",
     "question_label": "What do you worry the most about?",
-    "options":[
+    "choices":[
       "Saving for Retirement",
       "Paying Off Debt",
       "Buying a Home",
