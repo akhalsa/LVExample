@@ -28,6 +28,9 @@ public class Question implements QuestionView.ViewModel {
     public QuestionType getType(){
         return questionType;
     }
+    public List<String> getChoices(){
+        return choices;
+    }
 
     public void setStringResponse(String response){
         this.response = response;
