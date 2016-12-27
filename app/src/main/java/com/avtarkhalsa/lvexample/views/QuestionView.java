@@ -44,23 +44,16 @@ public class QuestionView extends LinearLayout {
     @BindView(R.id.multi_select_input)
     RecyclerView multiSelectInput;
 
-    private ViewModel viewModel;
+    private MultiSelectAdapter currentMultiSelectAdapter;
 
     public QuestionView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    private void init() {
-        inflate(getContext(), R.layout.question_view_layout, this);
-        ButterKnife.bind(this);
-        multiSelectInput.setLayoutManager(new LinearLayoutManager(getContext()));
-    }
-
     public void bindToQuestion(ViewModel vm){
         question_label.setText(vm.getLabel());
         hideAllInputs();
-        viewModel = vm;
         switch (vm.getType()){
             case Textual:
                 textualInput.setVisibility(View.VISIBLE);
@@ -80,17 +73,57 @@ public class QuestionView extends LinearLayout {
         }
     }
 
+    public String getTextInput(){
+        if (textualInput.getText().toString().isEmpty()){
+            return null;
+        }
+        return textualInput.getText().toString();
+    }
+
+    public Double getNumericalInput(){
+        if (numericalInput.getText().toString().isEmpty()){
+            return null;
+        }
+        return Double.valueOf(numericalInput.getText().toString());
+    }
+
+    public Integer getSingleSelection(){
+        if (singleSelectInput.getCheckedRadioButtonId() == -1){
+            return null;
+        }
+        return singleSelectInput.getCheckedRadioButtonId();
+    }
+
+    public List<Integer> getMultiSelections(){
+        if (currentMultiSelectAdapter == null){
+            return null;
+        }
+        List<Integer> checked = currentMultiSelectAdapter.getSelections();
+        if(checked.size() == 0){
+            return null;
+        }
+        return checked;
+    }
+
+    private void init() {
+        inflate(getContext(), R.layout.question_view_layout, this);
+        ButterKnife.bind(this);
+        multiSelectInput.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
     private void populateSingleSelect(ViewModel vm){
         for (int i =0; i<vm.getChoices().size(); i++){
             String choice = vm.getChoices().get(i);
             RadioButton rb = new RadioButton(this.getContext());
             rb.setText(choice);
+            rb.setId(i);
             singleSelectInput.addView(rb);
         }
     }
 
     private void populateMultiSelect(ViewModel vm){
-        multiSelectInput.setAdapter(new MultiSelectAdapter(vm.getChoices()));
+        currentMultiSelectAdapter = new MultiSelectAdapter(vm.getChoices());
+        multiSelectInput.setAdapter(currentMultiSelectAdapter);
     }
     private void hideAllInputs(){
         numericalInput.setVisibility(View.GONE);

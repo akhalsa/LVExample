@@ -37,6 +37,10 @@ public class Question implements QuestionView.ViewModel {
         this.response = response;
     }
 
+    public int getId() {
+        return id;
+    }
+
     // View Model Implementation
     public String getLabel() {
         return questionLabel;

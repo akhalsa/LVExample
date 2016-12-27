@@ -8,13 +8,14 @@ import io.reactivex.Maybe;
  * Created by avtarkhalsa on 12/25/16.
  */
 public interface QuestionManager {
-    Maybe<Question> loadNextQuestion();
 
-    void setStringResponseForQuestion(String response, Question question);
+    Maybe<Question> loadFirstQuestion();
 
-    void setNumberResponseForQuestion(double response, Question question);
+    Maybe<Question> setStringResponseForQuestion(String response, Question question);
 
-    void setChoicesResponseForQuestion(int[] choice_indicies, Question question);
+    Maybe<Question> setNumberResponseForQuestion(Double response, Question question);
+
+    Maybe<Question> setChoicesResponseForQuestion(Integer[] choice_indicies, Question question);
 
     Question loadCompletedQuestionWithId(int question_id);
 }

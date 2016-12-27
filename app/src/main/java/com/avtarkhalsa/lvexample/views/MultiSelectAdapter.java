@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.avtarkhalsa.lvexample.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,6 +45,16 @@ public class MultiSelectAdapter extends RecyclerView.Adapter<MultiSelectAdapter.
     @Override
     public int getItemCount() {
         return choices.size();
+    }
+
+    public List<Integer> getSelections(){
+        List<Integer> checked = new ArrayList<>();
+        for (Integer i : selections.keySet()){
+            if (selections.get(i)){
+                checked.add(i);
+            }
+        }
+        return checked;
     }
 
     public class MultiSelectViewHolder extends RecyclerView.ViewHolder {

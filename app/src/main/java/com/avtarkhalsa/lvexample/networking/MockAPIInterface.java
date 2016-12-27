@@ -53,6 +53,8 @@ public class MockAPIInterface implements APIInterface {
         return Observable.defer(new Callable<ObservableSource<List<NetworkQuestion>>>() {
             @Override
             public ObservableSource<List<NetworkQuestion>> call() throws Exception {
+                Log.v("avtar-logger", "This is fake network latency");
+                Thread.sleep(5000);
                 return Observable.just(mockResponse);
             }
         });
