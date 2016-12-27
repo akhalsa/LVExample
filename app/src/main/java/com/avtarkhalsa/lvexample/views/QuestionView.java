@@ -8,8 +8,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.avtarkhalsa.lvexample.R;
-import com.avtarkhalsa.lvexample.models.BaseQuestion;
 import com.avtarkhalsa.lvexample.models.QuestionType;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,6 +22,10 @@ public class QuestionView extends LinearLayout {
     public interface ViewModel{
         String getLabel();
         QuestionType getType();
+        List<String> getChoices();
+        void setStringResponse(String response);
+        void setNumberResponse(double response);
+        void setChoices(int[] choice_index);
     }
 
     @BindView(R.id.question_label)
