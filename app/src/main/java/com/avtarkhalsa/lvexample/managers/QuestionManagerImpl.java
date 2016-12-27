@@ -1,11 +1,6 @@
 package com.avtarkhalsa.lvexample.managers;
 
-import android.os.Looper;
-import android.util.Log;
-
-import com.avtarkhalsa.lvexample.models.BaseQuestion;
-import com.avtarkhalsa.lvexample.models.QuestionType;
-import com.avtarkhalsa.lvexample.models.TextualQuestion;
+import com.avtarkhalsa.lvexample.models.Question;
 import com.avtarkhalsa.lvexample.networking.APIInterface;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
 
@@ -13,9 +8,7 @@ import java.util.List;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -23,7 +16,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class QuestionManagerImpl implements QuestionManager {
     private APIInterface apiInterface;
-    private Observable<BaseQuestion> networkStream;
+    private Observable<Question> networkStream;
 
     private int currentQuestion;
     private int questionsLength;
@@ -38,32 +31,22 @@ public class QuestionManagerImpl implements QuestionManager {
                         return Observable.fromArray(networkQuestions.toArray(new NetworkQuestion[questionsLength]));
                     }
                 })
-                .map(new Function<NetworkQuestion, BaseQuestion>() {
+                .map(new Function<NetworkQuestion, Question>() {
                     @Override
-                    public BaseQuestion apply(NetworkQuestion networkQuestion) throws Exception {
-                        return instantiateQuestion(networkQuestion);
+                    public Question apply(NetworkQuestion networkQuestion) throws Exception {
+                        return new Question(networkQuestion);
                     }
                 });
         currentQuestion = 0;
         questionsLength = 0;
     }
 
-    public Maybe<BaseQuestion> loadNextQuestion(){
+    public Maybe<Question> loadNextQuestion(){
         int i = currentQuestion;
         currentQuestion++;
         return networkStream.elementAt((long)i);
     }
 
-    private BaseQuestion instantiateQuestion(NetworkQuestion nq){
-        QuestionType qt = QuestionType.fromString(nq.getQuestion_type());
-        switch(qt){
-            case Textual:
-                return new TextualQuestion(nq.getQuestion_label());
-            case Numerical:
-                return new TextualQuestion(nq.getQuestion_label());
-            default:
-                return null;
-        }
-    }
+
 }
 

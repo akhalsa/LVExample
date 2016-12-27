@@ -2,36 +2,25 @@ package com.avtarkhalsa.lvexample.activities;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.avtarkhalsa.lvexample.LVExampleApplication;
 import com.avtarkhalsa.lvexample.R;
 import com.avtarkhalsa.lvexample.managers.QuestionManager;
-import com.avtarkhalsa.lvexample.models.BaseQuestion;
-import com.avtarkhalsa.lvexample.networking.APIInterface;
-import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
+import com.avtarkhalsa.lvexample.models.Question;
 import com.avtarkhalsa.lvexample.views.QuestionView;
-import com.google.gson.Gson;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.MaybeObserver;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
@@ -65,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
     private void loadQuestion(){
         questionManager.loadNextQuestion()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<BaseQuestion>() {
+                .subscribe(new Consumer<Question>() {
                     @Override
-                    public void accept(BaseQuestion baseQuestion) throws Exception {
-                        renderQuestion(baseQuestion);
+                    public void accept(Question question) throws Exception {
+                        renderQuestion(question);
                     }
                 });
     }
-    private void renderQuestion(BaseQuestion bq){
+    private void renderQuestion(Question bq){
         questionView.bindToQuestion(bq);
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
