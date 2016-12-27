@@ -18,7 +18,12 @@ public class Question implements QuestionView.ViewModel {
     public Question(NetworkQuestion nq){
         questionLabel = nq.getQuestion_label();
         questionType = QuestionType.fromString(nq.getQuestion_type());
-        choices = new ArrayList<>(nq.getChoices());
+        if((questionType == QuestionType.MultiSelect) || (questionType == QuestionType.SingleSelect)){
+            choices = new ArrayList<>(nq.getChoices());
+        }else{
+            choices = new ArrayList<>();
+        }
+
         response = null; //perhaps the responses will be synced against the server at some point. For now lets leave them local
     }
 

@@ -43,12 +43,11 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                loadQuestion();
             }
         });
-
         loadQuestion();
+
 
     }
     private void loadQuestion(){
@@ -57,20 +56,11 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(new Consumer<Question>() {
                     @Override
                     public void accept(Question question) throws Exception {
-                        renderQuestion(question);
+                        questionView.bindToQuestion(question);
                     }
                 });
     }
-    private void renderQuestion(Question bq){
-        questionView.bindToQuestion(bq);
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                loadQuestion();
-            }
-        }, 5000);
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
