@@ -9,4 +9,12 @@ import io.reactivex.Maybe;
  */
 public interface QuestionManager {
     Maybe<Question> loadNextQuestion();
+
+    void setStringResponseForQuestion(String response, Question question);
+
+    void setNumberResponseForQuestion(double response, Question question);
+
+    void setChoicesResponseForQuestion(int[] choice_indicies, Question question);
+
+    Question loadCompletedQuestionWithId(int question_id);
 }

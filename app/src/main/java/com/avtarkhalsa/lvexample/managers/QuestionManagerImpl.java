@@ -44,5 +44,32 @@ public class QuestionManagerImpl implements QuestionManager {
         currentQuestion++;
         return networkStream.elementAt((long)i);
     }
+
+    @Override
+    public void setStringResponseForQuestion(String response, Question question) {
+        //any syncing with the api can be done from here if necessary
+        question.setResponse(response);
+    }
+
+    @Override
+    public void setNumberResponseForQuestion(double response, Question question) {
+        //any syncing with the api can be done from here if necessary
+        question.setResponse(Double.valueOf(response).toString());
+    }
+
+    @Override
+    public void setChoicesResponseForQuestion(int[] choice_indicies, Question question) {
+        //any syncing with the api can be done from here if necessary
+        StringBuilder sb = new StringBuilder();
+        for (int i : choice_indicies){
+            sb.append(question.getChoices().get(i));
+        }
+        question.setResponse(sb.toString());
+    }
+
+    @Override
+    public Question loadCompletedQuestionWithId(int question_id){
+        return null;
+    }
 }
 
