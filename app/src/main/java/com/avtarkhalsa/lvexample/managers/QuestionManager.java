@@ -2,6 +2,8 @@ package com.avtarkhalsa.lvexample.managers;
 
 import com.avtarkhalsa.lvexample.models.Question;
 
+import java.util.List;
+
 import io.reactivex.Maybe;
 
 /**
@@ -15,7 +17,7 @@ public interface QuestionManager {
 
     Maybe<Question> setNumberResponseForQuestion(Double response, Question question);
 
-    Maybe<Question> setChoicesResponseForQuestion(Integer[] choice_indicies, Question question);
+    Maybe<Question> setChoicesResponseForQuestion(List<Integer> choice_indicies, Question question);
 
     Question loadCompletedQuestionWithId(int question_id);
 }

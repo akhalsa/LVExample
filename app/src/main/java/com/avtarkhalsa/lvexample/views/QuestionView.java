@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.avtarkhalsa.lvexample.R;
 import com.avtarkhalsa.lvexample.models.QuestionType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -87,11 +88,13 @@ public class QuestionView extends LinearLayout {
         return Double.valueOf(numericalInput.getText().toString());
     }
 
-    public Integer getSingleSelection(){
+    public List<Integer> getSingleSelection(){
         if (singleSelectInput.getCheckedRadioButtonId() == -1){
             return null;
         }
-        return singleSelectInput.getCheckedRadioButtonId();
+        List<Integer>checks =  new ArrayList<>();
+        checks.add(singleSelectInput.getCheckedRadioButtonId());
+        return checks;
     }
 
     public List<Integer> getMultiSelections(){

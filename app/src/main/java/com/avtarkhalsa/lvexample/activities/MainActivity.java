@@ -68,17 +68,14 @@ public class MainActivity extends AppCompatActivity {
                         .subscribe(questionConsumer);
                 break;
             case SingleSelect:
-                Integer[] singleSelectPosition = {questionView.getSingleSelection()};
                 questionManager
-                        .setChoicesResponseForQuestion(singleSelectPosition, currentQuestion)
+                        .setChoicesResponseForQuestion(questionView.getSingleSelection(), currentQuestion)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(questionConsumer);
                 break;
             case MultiSelect:
-                List<Integer> multSelect = questionView.getMultiSelections();
-                Integer[] multiSelectPositions = multSelect.toArray(new Integer[multSelect.size()]);
                 questionManager
-                        .setChoicesResponseForQuestion(multiSelectPositions, currentQuestion)
+                        .setChoicesResponseForQuestion(questionView.getMultiSelections(), currentQuestion)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(questionConsumer);
                 break;

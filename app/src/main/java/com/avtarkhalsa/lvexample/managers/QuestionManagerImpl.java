@@ -68,11 +68,13 @@ public class QuestionManagerImpl implements QuestionManager {
     }
 
     @Override
-    public Maybe<Question> setChoicesResponseForQuestion(Integer[] choice_indicies, Question question) {
+    public Maybe<Question> setChoicesResponseForQuestion(List<Integer> choice_indicies, Question question) {
         //any syncing with the api can be done from here if necessary
         StringBuilder sb = new StringBuilder();
-        for (int i : choice_indicies){
-            sb.append(question.getChoices().get(i));
+        if (choice_indicies != null){
+            for (int i : choice_indicies){
+                sb.append(question.getChoices().get(i));
+            }
         }
         question.setResponse(sb.toString());
         return loadNextQuestion(question);
