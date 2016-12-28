@@ -1,8 +1,13 @@
 package com.avtarkhalsa.lvexample.managers;
 
+import android.util.Log;
+
 import com.avtarkhalsa.lvexample.models.Question;
 import com.avtarkhalsa.lvexample.networking.APIInterface;
+import com.avtarkhalsa.lvexample.networkmodels.NetworkCondition;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
+import com.avtarkhalsa.lvexample.networkmodels.NetworkTakeAway;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,34 +25,33 @@ import io.reactivex.subjects.ReplaySubject;
  */
 public class QuestionManagerImpl implements QuestionManager {
 
-    private ReplaySubject<Question> networkStream;
+    private ReplaySubject<NetworkQuestion> networkStream;
 
     private HashMap<Integer, Question> completedQuestionsLookup;
-    private int questionsLength;
     public QuestionManagerImpl(APIInterface api){
-        Observable<Question> networkObservable = api.getAllQuestions()
+        Observable<NetworkQuestion> networkObservable = api.getAllQuestions()
                 .subscribeOn(Schedulers.io())
                 .flatMap(new Function<List<NetworkQuestion>, Observable<NetworkQuestion>>() {
                     @Override
                     public Observable<NetworkQuestion> apply(List<NetworkQuestion> networkQuestions) throws Exception {
-                        questionsLength = networkQuestions.size();
-                        return Observable.fromArray(networkQuestions.toArray(new NetworkQuestion[questionsLength]));
+                        return Observable.fromArray(networkQuestions.toArray(new NetworkQuestion[networkQuestions.size()]));
                     }
-                })
+                });
+        networkStream = ReplaySubject.create();
+        networkObservable.subscribe(networkStream);
+        completedQuestionsLookup = new HashMap<>();
+    }
+
+    public Maybe<Question> loadFirstQuestion(){
+        return networkStream
+                .elementAt((long)0)
                 .map(new Function<NetworkQuestion, Question>() {
                     @Override
                     public Question apply(NetworkQuestion networkQuestion) throws Exception {
                         return new Question(networkQuestion);
                     }
                 });
-        networkStream = ReplaySubject.create();
-        networkObservable.subscribe(networkStream);
-        questionsLength = 0;
-        completedQuestionsLookup = new HashMap<>();
-    }
 
-    public Maybe<Question> loadFirstQuestion(){
-        return networkStream.elementAt((long)0);
     }
 
     @Override
@@ -89,27 +93,51 @@ public class QuestionManagerImpl implements QuestionManager {
 
     private Maybe<Question> loadNextQuestion(Question q){
         completedQuestionsLookup.put(q.getId(), q);
-        final int new_id = q.getId()+1;
         return networkStream
-                .filter(
-                    new Predicate<Question>() {
-                        @Override
-                        public boolean test(Question question) throws Exception {
-                            return question.getId() == new_id;
-                        }
-                    }
-                )
-                .map(new Function<Question, Question>() {
+                .elementAt(completedQuestionsLookup.size())
+                .map(new Function<NetworkQuestion, Question>() {
                     @Override
-                    public Question apply(Question question) throws Exception {
+                    public Question apply(NetworkQuestion networkQuestion) throws Exception {
                         //this is where we append the label to display at the top
+                        Question question = new Question(networkQuestion);
                         if(completedQuestionsLookup.get(0) != null){
                             question.setWelcome("Hi "+completedQuestionsLookup.get(0).getResponse()+"! Let’s talk about...");
                         }
+                        //next we need to analyse the NetworkQuestion
+                        question.setDialogText(checkForDialog(networkQuestion));
                         return question;
                     }
-                })
-                .firstElement();
+                });
+    }
+
+    private String checkForDialog(NetworkQuestion networkQuestion){
+        if((networkQuestion.getTake_aways() == null) || (networkQuestion.getTake_aways().size() == 0)){
+            return null;
+        }
+        for (NetworkTakeAway takeAway : networkQuestion.getTake_aways()){
+            boolean conditionsMet = true;
+            for (NetworkCondition condition :takeAway.getConditions()){
+                String userResponse = completedQuestionsLookup.get(condition.getQuestion_id()).getResponse();
+                Double d = Double.valueOf(userResponse);
+
+                if((condition.getGreater_than() != null) &&(condition.getGreater_than() >= d)){
+                    Log.v("avtar-logger", "setting conditions met to false because: "+condition.getGreater_than()+"<="+d);
+                    conditionsMet = false;
+                }
+                if((condition.getLess_than() != null) &&(condition.getLess_than() <= d)){
+                    Log.v("avtar-logger", "setting conditions met to false because: "+condition.getLess_than()+">="+d);
+                    conditionsMet = false;
+                }
+                if((condition.getEqual_to() != null) &&(condition.getEqual_to().doubleValue() != d)){
+                    Log.v("avtar-logger", "setting conditions met to false because: "+condition.getEqual_to()+"!="+d);
+                    conditionsMet = false;
+                }
+            }
+            if(conditionsMet){
+                return takeAway.getText();
+            }
+        }
+        return null;
     }
 }
 

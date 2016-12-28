@@ -32,4 +32,8 @@ public class NetworkQuestion {
     public int getQuestion_id() {
         return question_id;
     }
+
+    public ArrayList<NetworkTakeAway> getTake_aways() {
+        return take_aways;
+    }
 }

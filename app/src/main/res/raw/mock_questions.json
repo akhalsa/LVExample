@@ -25,10 +25,7 @@
           },
           {
             "question_id":1,
-            "less_than":30
-          },
-          {
-            "question_id":1,
+            "less_than":30,
             "greater_than":20
           }
         ]

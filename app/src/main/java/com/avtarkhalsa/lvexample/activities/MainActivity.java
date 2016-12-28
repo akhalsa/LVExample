@@ -1,9 +1,12 @@
 package com.avtarkhalsa.lvexample.activities;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
@@ -100,6 +103,13 @@ public class MainActivity extends AppCompatActivity {
         public void onSuccess(Question question) {
             //this is the code to run any time we get a new question
             //if we were using RetroLambda we would want to use a method reference instead
+            if(question.getDialogText() != null){
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage(question.getDialogText());
+                builder.setPositiveButton("Great", null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
             nextButton.setEnabled(true);
             questionView.bindToQuestion(question);
             EditText currentInput = questionView.getCurrentInput();

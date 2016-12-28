@@ -8,4 +8,14 @@ import java.util.List;
 public class NetworkTakeAway {
     String text;
     List<NetworkCondition> conditions;
+
+    public List<NetworkCondition> getConditions() {
+        return conditions;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+
 }
