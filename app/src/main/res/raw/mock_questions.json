@@ -10,14 +10,38 @@
     "question_id": 1
   },
   {
+    "question_type" : "Numerical",
+    "question_label" : "How much do you have saved?",
+    "question_id": 8
+  },
+  {
+    "take_aways":[
+      {
+        "text": "Great job! Did you know most people in their 20’s only on average have $1k in their bank account",
+        "conditions":[
+          {
+            "question_id":8,
+            "greater_than":100000
+          },
+          {
+            "question_id":1,
+            "less_than":30
+          },
+          {
+            "question_id":1,
+            "greater_than":20
+          }
+        ]
+      }
+    ],
     "question_type":"Textual",
     "question_label":"What's your job title?",
-    "question_id": 2
+    "question_id": 3
   },
   {
     "question_type":"Single Select",
     "question_label":"Are you married?",
-    "question_id": 3,
+    "question_id": 4,
     "choices":[
       "Yes",
       "No"
@@ -26,17 +50,17 @@
   {
     "question_type":"Textual",
     "question_label":"Where do you live?",
-    "question_id": 4
+    "question_id": 5
   },
   {
     "question_type":"Numerical",
     "question_label":"What is your monthly salary?",
-    "question_id": 5
+    "question_id": 6
   },
   {
     "question_type":"Multi Select",
     "question_label": "What do you worry the most about?",
-    "question_id": 6,
+    "question_id": 7,
     "choices":[
       "Saving for Retirement",
       "Paying Off Debt",

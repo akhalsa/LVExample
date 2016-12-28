@@ -15,6 +15,8 @@ public class NetworkQuestion {
 
     ArrayList<String> choices; //may be null
 
+    ArrayList<NetworkTakeAway> take_aways;
+
     public String getQuestion_type() {
         return question_type;
     }
