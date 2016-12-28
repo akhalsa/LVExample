@@ -6,13 +6,12 @@
         android:id="@+id/question_welcome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hi John! Let’s talk about..."
+        android:text="@string/default_welcome"
         />
     <TextSwitcher
         android:id="@+id/question_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="What is your monthly salary"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"/>
     <EditText

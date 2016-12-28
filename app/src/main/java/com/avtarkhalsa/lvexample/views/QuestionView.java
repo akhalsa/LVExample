@@ -145,6 +145,7 @@ public class QuestionView extends LinearLayout {
         Animation out = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_out_right);
         question_label.setInAnimation(in);
         question_label.setOutAnimation(out);
+        hideAllInputs();
     }
 
     private void populateSingleSelect(ViewModel vm){

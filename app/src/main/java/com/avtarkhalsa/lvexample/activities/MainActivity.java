@@ -1,12 +1,9 @@
 package com.avtarkhalsa.lvexample.activities;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
@@ -56,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        nextButton.setEnabled(false);
         questionManager.loadFirstQuestion()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(questionMaybeObserver);
@@ -102,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         public void onSuccess(Question question) {
             //this is the code to run any time we get a new question
             //if we were using RetroLambda we would want to use a method reference instead
+            nextButton.setEnabled(true);
             questionView.bindToQuestion(question);
             EditText currentInput = questionView.getCurrentInput();
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -112,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                         if (actionId == EditorInfo.IME_ACTION_NEXT){
-                            Log.v("avtar-logger", "got a next event");
                             nextClicked(nextButton);
                             return true;
                         }else{
