@@ -13,11 +13,15 @@ public class Question implements QuestionView.ViewModel {
     String questionLabel;
     QuestionType questionType;
     String response;
+    int id;
     List<String> choices;
+
+    String welcome;
 
     public Question(NetworkQuestion nq){
         questionLabel = nq.getQuestion_label();
         questionType = QuestionType.fromString(nq.getQuestion_type());
+        id = nq.getQuestion_id();
         if((questionType == QuestionType.MultiSelect) || (questionType == QuestionType.SingleSelect)){
             choices = new ArrayList<>(nq.getChoices());
         }else{
@@ -25,8 +29,30 @@ public class Question implements QuestionView.ViewModel {
         }
 
         response = null; //perhaps the responses will be synced against the server at some point. For now lets leave them local
+        welcome = null;
     }
 
+    //Values Managed by the QuestionManager
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
+
+
+    public void setWelcome(String welcome) {
+        this.welcome = welcome;
+    }
+
+
+    //Values that need to be read by
+    public int getId() {
+        return id;
+    }
+
+    // View Model Implementation
     public String getLabel() {
         return questionLabel;
     }
@@ -36,20 +62,8 @@ public class Question implements QuestionView.ViewModel {
     public List<String> getChoices(){
         return choices;
     }
-
-    public void setStringResponse(String response){
-        this.response = response;
+    public String getWelcome() {
+        return welcome;
     }
 
-    public void setNumberResponse(double response){
-        this.response = Double.valueOf(response).toString();
-    }
-
-    public void setChoices(int[] choice_indicies){
-        StringBuilder sb = new StringBuilder();
-        for (int i : choice_indicies){
-            sb.append(choices.get(i));
-        }
-        response = sb.toString();
-    }
 }

@@ -3,6 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
     <TextView
+        android:id="@+id/question_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hi John! Let’s talk about..."
+        />
+    <TextView
         android:id="@+id/question_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

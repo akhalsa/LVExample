@@ -11,6 +11,8 @@ public class NetworkQuestion {
 
     String question_label;
 
+    int question_id;
+
     ArrayList<String> choices; //may be null
 
     public String getQuestion_type() {
@@ -23,5 +25,9 @@ public class NetworkQuestion {
 
     public ArrayList<String> getChoices() {
         return choices;
+    }
+
+    public int getQuestion_id() {
+        return question_id;
     }
 }
