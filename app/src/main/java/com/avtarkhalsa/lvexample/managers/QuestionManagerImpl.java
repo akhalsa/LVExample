@@ -87,11 +87,6 @@ public class QuestionManagerImpl implements QuestionManager {
         return loadNextQuestion(question);
     }
 
-    @Override
-    public Question loadCompletedQuestionWithId(int question_id){
-        return completedQuestionsLookup.get(question_id);
-    }
-
     private Maybe<Question> loadNextQuestion(Question q){
         completedQuestionsLookup.put(q.getId(), q);
         final int new_id = q.getId()+1;

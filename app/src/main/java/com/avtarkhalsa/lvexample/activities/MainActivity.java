@@ -1,14 +1,21 @@
 package com.avtarkhalsa.lvexample.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avtarkhalsa.lvexample.LVExampleApplication;
@@ -40,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     Button nextButton;
     private Question currentQuestion;
 
+    private String invalidInputText = "Invalid Input";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,14 +103,33 @@ public class MainActivity extends AppCompatActivity {
             //this is the code to run any time we get a new question
             //if we were using RetroLambda we would want to use a method reference instead
             questionView.bindToQuestion(question);
-            questionView.attemptToSetInputAsFocus();
+            EditText currentInput = questionView.getCurrentInput();
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if(currentInput != null){
+                imm.showSoftInput(currentInput, InputMethodManager.SHOW_IMPLICIT);
+                currentInput.requestFocus();
+                currentInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if (actionId == EditorInfo.IME_ACTION_NEXT){
+                            Log.v("avtar-logger", "got a next event");
+                            nextClicked(nextButton);
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }
+                });
+            }else{
+                imm.hideSoftInputFromWindow(mainCoordinator.getWindowToken(), 0);
+            }
             currentQuestion = question;
         }
 
         @Override
         public void onError(Throwable e) {
             if(e instanceof QuestionManager.BadResponseException){
-                Toast.makeText(MainActivity.this, "Invalid Input", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, invalidInputText, Toast.LENGTH_SHORT).show();
             }
         }
 
