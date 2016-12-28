@@ -5,6 +5,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -56,9 +58,22 @@ public class QuestionView extends LinearLayout {
         init();
     }
 
+    public void attemptToSetInputAsFocus(){
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(textualInput.getVisibility() == View.VISIBLE){
+            imm.showSoftInput(textualInput, InputMethodManager.SHOW_IMPLICIT);
+        } else if (numericalInput.getVisibility() == View.VISIBLE){
+            imm.showSoftInput(numericalInput, InputMethodManager.SHOW_IMPLICIT);
+        }else{
+            imm.hideSoftInputFromWindow(this.getWindowToken(), 0);
+        }
+    }
+
+
     public void bindToQuestion(ViewModel vm){
         question_label.setText(vm.getLabel());
         hideAllInputs();
+        clearAllInputs();
         switch (vm.getType()){
             case Textual:
                 textualInput.setVisibility(View.VISIBLE);
@@ -139,10 +154,17 @@ public class QuestionView extends LinearLayout {
     private void hideAllInputs(){
         numericalInput.setVisibility(View.GONE);
         textualInput.setVisibility(View.GONE);
-        singleSelectInput.removeAllViews();
         singleSelectInput.setVisibility(View.GONE);
         multiSelectInput.setVisibility(View.GONE);
         welcome_label.setVisibility(View.GONE);
+    }
+
+    private void clearAllInputs(){
+        singleSelectInput.removeAllViews();
+        numericalInput.setText("");
+        textualInput.setText("");
+        multiSelectInput.setAdapter(null);
+        currentMultiSelectAdapter = null;
     }
 
 
