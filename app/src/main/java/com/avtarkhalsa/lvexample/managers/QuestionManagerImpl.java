@@ -82,7 +82,7 @@ public class QuestionManagerImpl implements QuestionManager {
 
     @Override
     public Question loadCompletedQuestionWithId(int question_id){
-        return null;
+        return completedQuestionsLookup.get(question_id);
     }
 
     private Maybe<Question> loadNextQuestion(Question q){
@@ -97,6 +97,16 @@ public class QuestionManagerImpl implements QuestionManager {
                         }
                     }
                 )
+                .map(new Function<Question, Question>() {
+                    @Override
+                    public Question apply(Question question) throws Exception {
+                        //this is where we append the label to display at the top
+                        if(completedQuestionsLookup.get(0) != null){
+                            question.setWelcome("Hi "+completedQuestionsLookup.get(0).getResponse()+"! Let’s talk about...");
+                        }
+                        return question;
+                    }
+                })
                 .firstElement();
     }
 }

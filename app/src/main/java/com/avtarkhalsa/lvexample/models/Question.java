@@ -16,6 +16,8 @@ public class Question implements QuestionView.ViewModel {
     int id;
     List<String> choices;
 
+    String welcome;
+
     public Question(NetworkQuestion nq){
         questionLabel = nq.getQuestion_label();
         questionType = QuestionType.fromString(nq.getQuestion_type());
@@ -27,8 +29,10 @@ public class Question implements QuestionView.ViewModel {
         }
 
         response = null; //perhaps the responses will be synced against the server at some point. For now lets leave them local
+        welcome = null;
     }
 
+    //Values Managed by the QuestionManager
     public String getResponse() {
         return response;
     }
@@ -37,6 +41,13 @@ public class Question implements QuestionView.ViewModel {
         this.response = response;
     }
 
+
+    public void setWelcome(String welcome) {
+        this.welcome = welcome;
+    }
+
+
+    //Values that need to be read by
     public int getId() {
         return id;
     }
@@ -51,4 +62,8 @@ public class Question implements QuestionView.ViewModel {
     public List<String> getChoices(){
         return choices;
     }
+    public String getWelcome() {
+        return welcome;
+    }
+
 }

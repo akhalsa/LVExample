@@ -28,10 +28,14 @@ public class QuestionView extends LinearLayout {
         String getLabel();
         QuestionType getType();
         List<String> getChoices();
+        String getWelcome();
     }
 
     @BindView(R.id.question_label)
     TextView question_label;
+
+    @BindView(R.id.question_welcome)
+    TextView welcome_label;
 
     @BindView(R.id.numerical_input)
     EditText numericalInput;
@@ -71,6 +75,10 @@ public class QuestionView extends LinearLayout {
                 populateMultiSelect(vm);
                 break;
 
+        }
+        if(vm.getWelcome() != null){
+            welcome_label.setVisibility(View.VISIBLE);
+            welcome_label.setText(vm.getWelcome());
         }
     }
 
@@ -134,6 +142,7 @@ public class QuestionView extends LinearLayout {
         singleSelectInput.removeAllViews();
         singleSelectInput.setVisibility(View.GONE);
         multiSelectInput.setVisibility(View.GONE);
+        welcome_label.setVisibility(View.GONE);
     }
 
 
