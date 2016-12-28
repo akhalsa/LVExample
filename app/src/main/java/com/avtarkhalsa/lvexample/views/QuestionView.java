@@ -5,13 +5,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import com.avtarkhalsa.lvexample.R;
 import com.avtarkhalsa.lvexample.models.QuestionType;
@@ -34,7 +36,7 @@ public class QuestionView extends LinearLayout {
     }
 
     @BindView(R.id.question_label)
-    TextView question_label;
+    TextSwitcher question_label;
 
     @BindView(R.id.question_welcome)
     TextView welcome_label;
@@ -58,19 +60,8 @@ public class QuestionView extends LinearLayout {
         init();
     }
 
-    public void attemptToSetInputAsFocus(){
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(textualInput.getVisibility() == View.VISIBLE){
-            imm.showSoftInput(textualInput, InputMethodManager.SHOW_IMPLICIT);
-        } else if (numericalInput.getVisibility() == View.VISIBLE){
-            imm.showSoftInput(numericalInput, InputMethodManager.SHOW_IMPLICIT);
-        }else{
-            imm.hideSoftInputFromWindow(this.getWindowToken(), 0);
-        }
-    }
-
-
     public void bindToQuestion(ViewModel vm){
+        //lets animate the question transition
         question_label.setText(vm.getLabel());
         hideAllInputs();
         clearAllInputs();
@@ -94,6 +85,16 @@ public class QuestionView extends LinearLayout {
         if(vm.getWelcome() != null){
             welcome_label.setVisibility(View.VISIBLE);
             welcome_label.setText(vm.getWelcome());
+        }
+    }
+
+    public EditText getCurrentInput(){
+        if(textualInput.getVisibility() == View.VISIBLE){
+            return textualInput;
+        }else if (numericalInput.getVisibility() == View.VISIBLE) {
+            return numericalInput;
+        }else{
+            return null;
         }
     }
 
@@ -135,6 +136,15 @@ public class QuestionView extends LinearLayout {
         inflate(getContext(), R.layout.question_view_layout, this);
         ButterKnife.bind(this);
         multiSelectInput.setLayoutManager(new LinearLayoutManager(getContext()));
+        question_label.setFactory(new ViewSwitcher.ViewFactory() {
+            public View makeView() {
+                return new TextView(getContext());
+            }
+        });
+        Animation in = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
+        Animation out = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_out_right);
+        question_label.setInAnimation(in);
+        question_label.setOutAnimation(out);
     }
 
     private void populateSingleSelect(ViewModel vm){
@@ -166,6 +176,4 @@ public class QuestionView extends LinearLayout {
         multiSelectInput.setAdapter(null);
         currentMultiSelectAdapter = null;
     }
-
-
 }

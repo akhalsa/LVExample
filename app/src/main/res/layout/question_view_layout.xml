@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:text="Hi John! Let’s talk about..."
         />
-    <TextView
+    <TextSwitcher
         android:id="@+id/question_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,11 +19,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/numerical_input"
+        android:imeOptions="actionNext"
         android:inputType="numberDecimal"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textual_input"
+        android:imeOptions="actionNext"
         android:inputType="text"/>
     <RadioGroup
         android:layout_width="match_parent"
