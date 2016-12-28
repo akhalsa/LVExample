@@ -17,18 +17,9 @@
   {
     "take_aways":[
       {
-        "text": "Great job! Did you know most people in their 20’s only on average have $1k in their bank account",
-        "conditions":[
-          {
-            "question_id":8,
-            "greater_than":100000
-          },
-          {
-            "question_id":1,
-            "less_than":30,
-            "greater_than":20
-          }
-        ]
+        "text":"Great job! Did you know most people in their 20’s only on average have $1k in their bank account",
+        "action_button":"OK",
+        "expression": "($8 > 100000) && ($1 < 30) && ($1 > 20)"
       }
     ],
     "question_type":"Textual",

@@ -1,5 +1,7 @@
 package com.avtarkhalsa.lvexample.networkmodels;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -7,14 +9,14 @@ import java.util.List;
  */
 public class NetworkTakeAway {
     String text;
-    List<NetworkCondition> conditions;
 
-    public List<NetworkCondition> getConditions() {
-        return conditions;
-    }
+    String expression;
 
     public String getText() {
         return text;
+    }
+    public String getLogic() {
+        return expression;
     }
 
 
