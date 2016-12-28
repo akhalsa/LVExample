@@ -19,6 +19,7 @@ import io.reactivex.subjects.ReplaySubject;
  * Created by avtarkhalsa on 12/25/16.
  */
 public class QuestionManagerImpl implements QuestionManager {
+
     private ReplaySubject<Question> networkStream;
 
     private HashMap<Integer, Question> completedQuestionsLookup;
@@ -52,6 +53,10 @@ public class QuestionManagerImpl implements QuestionManager {
     @Override
     public Maybe<Question> setStringResponseForQuestion(String response, Question question) {
         //any syncing with the api can be done from here if necessary
+        if ((response == null) || response.isEmpty()){
+            return Maybe.error(new BadResponseException());
+        }
+
         question.setResponse(response);
         return loadNextQuestion(question);
     }
@@ -60,15 +65,17 @@ public class QuestionManagerImpl implements QuestionManager {
     public Maybe<Question> setNumberResponseForQuestion(Double response, Question question) {
         //any syncing with the api can be done from here if necessary
         if(response == null){
-            question.setResponse(null);
-        }else{
-            question.setResponse(Double.valueOf(response).toString());
+            return Maybe.error(new BadResponseException());
         }
+        question.setResponse(Double.valueOf(response).toString());
         return loadNextQuestion(question);
     }
 
     @Override
     public Maybe<Question> setChoicesResponseForQuestion(List<Integer> choice_indicies, Question question) {
+        if ((choice_indicies == null) || (choice_indicies.size() == 0)){
+            return Maybe.error(new BadResponseException());
+        }
         //any syncing with the api can be done from here if necessary
         StringBuilder sb = new StringBuilder();
         if (choice_indicies != null){
