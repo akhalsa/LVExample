@@ -15,6 +15,7 @@ import com.fathzer.soft.javaluator.Parameters;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -105,8 +106,8 @@ public class QuestionManagerImpl implements QuestionManager {
         //any syncing with the api can be done from here if necessary
         StringBuilder sb = new StringBuilder();
         if (choice_indicies != null){
-            for (int i : choice_indicies){
-                sb.append(question.getChoices().get(i));
+            for (Integer i : choice_indicies){
+                sb.append(i.toString());
             }
         }
         question.setResponse(sb.toString());
@@ -192,12 +193,29 @@ public class QuestionManagerImpl implements QuestionManager {
 
                 String EVAL_TRUE = "(0 < 1)";
                 String EVAL_FALSE = "(0 > 1)";
-
-
-                //ok next lets find all the integer values referenced here and replace them
-                Pattern p = Pattern.compile("\\$(\\d+)");
+                Pattern p = Pattern.compile("CHECK_SELECTION\\((.*?)\\)");
                 Matcher m = p.matcher(expression);
                 HashMap<String, String> replacements = new HashMap<>();
+                while(m.find()){
+                    String[] methodParams = m.group(1).split(",");
+                    Integer qId = Integer.valueOf(methodParams[0]);
+                    String check = methodParams[1].trim();
+                    if(Arrays.asList(completedQuestionsLookup.get(qId).getResponse().split(",")).contains(check)){
+                        replacements.put(m.group(1), EVAL_TRUE);
+                    }else{
+                        List<String> response = Arrays.asList(completedQuestionsLookup.get(qId).getResponse().split(","));
+                        replacements.put(m.group(1), EVAL_FALSE);
+                    }
+                }
+                for(String params : replacements.keySet()){
+                    p = Pattern.compile("CHECK_SELECTION\\("+params+"\\)");
+                    expression = p.matcher(expression).replaceAll(replacements.get(params));
+                }
+
+                //ok next lets find all the integer values referenced here and replace them
+                p = Pattern.compile("\\$(\\d+)");
+                m = p.matcher(expression);
+                replacements = new HashMap<>();
                 while(m.find()){
                     Integer id = Integer.valueOf(m.group(1));
                     String newVal = Double.valueOf(completedQuestionsLookup.get(id).getResponse()).toString();
@@ -205,9 +223,11 @@ public class QuestionManagerImpl implements QuestionManager {
                 }
 
                 for(String qId : replacements.keySet()){
-                    Pattern single = Pattern.compile("\\$"+qId);
-                    expression = single.matcher(expression).replaceAll(replacements.get(qId));
+                    p = Pattern.compile("\\$"+qId);
+                    expression = p.matcher(expression).replaceAll(replacements.get(qId));
                 }
+
+                Log.v("avtar-logger", "post process expression: "+expression);
                 if (sbe.evaluate(expression) == 1.0){
                     //we have a match!
                     return nta.getText();
