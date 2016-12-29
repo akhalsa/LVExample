@@ -39,25 +39,18 @@ public class Question implements QuestionView.ViewModel {
     public String getResponse() {
         return response;
     }
-
     public void setResponse(String response) {
         this.response = response;
     }
-
-
     public void setWelcome(String welcome) {
         this.welcome = welcome;
     }
-
     public String getDialogText() {
         return dialogText;
     }
-
     public void setDialogText(String dialogText) {
         this.dialogText = dialogText;
     }
-
-    //Values that need to be read by
     public int getId() {
         return id;
     }

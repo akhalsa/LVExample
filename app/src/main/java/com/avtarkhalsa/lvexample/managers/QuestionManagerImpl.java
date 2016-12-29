@@ -4,17 +4,12 @@ import android.util.Log;
 
 import com.avtarkhalsa.lvexample.models.Question;
 import com.avtarkhalsa.lvexample.networking.APIInterface;
-import com.avtarkhalsa.lvexample.networkmodels.NetworkCondition;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkTakeAway;
-import com.fathzer.soft.javaluator.AbstractEvaluator;
 import com.fathzer.soft.javaluator.BracketPair;
 import com.fathzer.soft.javaluator.DoubleEvaluator;
 import com.fathzer.soft.javaluator.Operator;
 import com.fathzer.soft.javaluator.Parameters;
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -117,6 +112,18 @@ public class QuestionManagerImpl implements QuestionManager {
     private Maybe<Question> loadNextQuestion(Question q){
         completedQuestionsLookup.put(q.getId(), q);
         return networkStream
+                .filter(new Predicate<NetworkQuestion>() {
+                    @Override
+                    public boolean test(NetworkQuestion networkQuestion) throws Exception {
+                        if((networkQuestion.getSkip_expression() == null) || (networkQuestion.getSkip_expression().isEmpty())){
+                            return true;
+                        }
+                        if(evalExpression(networkQuestion.getSkip_expression())){
+                            return false;
+                        }
+                        return true;
+                    }
+                })
                 .elementAt(completedQuestionsLookup.size())
                 .map(new Function<NetworkQuestion, Question>() {
                     @Override
@@ -126,8 +133,22 @@ public class QuestionManagerImpl implements QuestionManager {
                         if(completedQuestionsLookup.get(0) != null){
                             question.setWelcome("Hi "+completedQuestionsLookup.get(0).getResponse()+"! Let’s talk about...");
                         }
+
                         //next we need to analyse the NetworkQuestion
-                        question.setDialogText(evalForDialog(networkQuestion));
+                        String dialogString = null;
+                        String actionString = null;
+                        if(networkQuestion.getTake_aways() != null) {
+                            for (NetworkTakeAway nta : networkQuestion.getTake_aways()) {
+                                Boolean showDialog = evalExpression(nta.getLogic());
+                                if(showDialog) {
+                                    dialogString = nta.getText();
+                                    actionString = nta.getAction_button();
+                                    break;
+                                }
+                            }
+
+                        }
+                        question.setDialogText(dialogString);
                         return question;
                     }
                 });
@@ -181,60 +202,57 @@ public class QuestionManagerImpl implements QuestionManager {
         }
     }
 
-    private String evalForDialog(NetworkQuestion networkQuestion){
+    private Boolean evalExpression(String expression){
+        //First we want to identify all the CHECK_SELECTION(qId, Index) conditions
+        //We will manually evaluate these guys and replace them with the EVAL_TRUE or EVAL_FALSE
+        //String constants below. This is a little hacky, but it will let us treat CHECK_SELECTION
+        //as a method which will get swapped out with an expression that the SBE will handle correctly
 
-        if(networkQuestion.getTake_aways() != null){
-            for (NetworkTakeAway nta : networkQuestion.getTake_aways()){
-                String expression = nta.getLogic();
-                //First we want to identify all the CHECK_SELECTION(qId, Index) conditions
-                //We will manually evaluate these guys and replace them with the EVAL_TRUE or EVAL_FALSE
-                //String constants below. This is a little hacky, but it will let us treat CHECK_SELECTION
-                //as a method which will get swapped out with an expression that the SBE will handle correctly
-
-                String EVAL_TRUE = "(0 < 1)";
-                String EVAL_FALSE = "(0 > 1)";
-                Pattern p = Pattern.compile("CHECK_SELECTION\\((.*?)\\)");
-                Matcher m = p.matcher(expression);
-                HashMap<String, String> replacements = new HashMap<>();
-                while(m.find()){
-                    String[] methodParams = m.group(1).split(",");
-                    Integer qId = Integer.valueOf(methodParams[0]);
-                    String check = methodParams[1].trim();
-                    if(Arrays.asList(completedQuestionsLookup.get(qId).getResponse().split(",")).contains(check)){
-                        replacements.put(m.group(1), EVAL_TRUE);
-                    }else{
-                        List<String> response = Arrays.asList(completedQuestionsLookup.get(qId).getResponse().split(","));
-                        replacements.put(m.group(1), EVAL_FALSE);
-                    }
-                }
-                for(String params : replacements.keySet()){
-                    p = Pattern.compile("CHECK_SELECTION\\("+params+"\\)");
-                    expression = p.matcher(expression).replaceAll(replacements.get(params));
-                }
-
-                //ok next lets find all the integer values referenced here and replace them
-                p = Pattern.compile("\\$(\\d+)");
-                m = p.matcher(expression);
-                replacements = new HashMap<>();
-                while(m.find()){
-                    Integer id = Integer.valueOf(m.group(1));
-                    String newVal = Double.valueOf(completedQuestionsLookup.get(id).getResponse()).toString();
-                    replacements.put(m.group(1), newVal);
-                }
-
-                for(String qId : replacements.keySet()){
-                    p = Pattern.compile("\\$"+qId);
-                    expression = p.matcher(expression).replaceAll(replacements.get(qId));
-                }
-
-                Log.v("avtar-logger", "post process expression: "+expression);
-                if (sbe.evaluate(expression) == 1.0){
-                    //we have a match!
-                    return nta.getText();
-                }
+        String EVAL_TRUE = "(0 < 1)";
+        String EVAL_FALSE = "(0 > 1)";
+        Pattern p = Pattern.compile("CHECK_SELECTION\\((.*?)\\)");
+        Matcher m = p.matcher(expression);
+        HashMap<String, String> replacements = new HashMap<>();
+        while(m.find()){
+            String[] methodParams = m.group(1).split(",");
+            Integer qId = Integer.valueOf(methodParams[0]);
+            String check = methodParams[1].trim();
+            if(!completedQuestionsLookup.containsKey(qId)){
+                return false;
+            }
+            if(Arrays.asList(completedQuestionsLookup.get(qId).getResponse().split(",")).contains(check)){
+                replacements.put(m.group(1), EVAL_TRUE);
+            }else{
+                replacements.put(m.group(1), EVAL_FALSE);
             }
         }
-        return null;
+        for(String params : replacements.keySet()){
+            p = Pattern.compile("CHECK_SELECTION\\("+params+"\\)");
+            expression = p.matcher(expression).replaceAll(replacements.get(params));
+        }
+
+        //ok next lets find all the integer values referenced here and replace them
+        p = Pattern.compile("\\$(\\d+)");
+        m = p.matcher(expression);
+        replacements = new HashMap<>();
+        while(m.find()){
+            Integer id = Integer.valueOf(m.group(1));
+            if(!completedQuestionsLookup.containsKey(id)){
+                return false;
+            }
+            String newVal = Double.valueOf(completedQuestionsLookup.get(id).getResponse()).toString();
+            replacements.put(m.group(1), newVal);
+        }
+
+        for(String qId : replacements.keySet()){
+            p = Pattern.compile("\\$"+qId);
+            expression = p.matcher(expression).replaceAll(replacements.get(qId));
+        }
+        if (sbe.evaluate(expression) == 1.0){
+            //we have a match!
+            return true;
+        }
+        return false;
     }
 }
 

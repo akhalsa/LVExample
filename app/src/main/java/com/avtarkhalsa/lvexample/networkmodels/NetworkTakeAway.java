@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class NetworkTakeAway {
     String text;
-
+    String action_button;
     String expression;
 
     public String getText() {
@@ -17,6 +17,9 @@ public class NetworkTakeAway {
     }
     public String getLogic() {
         return expression;
+    }
+    public String getAction_button() {
+        return action_button;
     }
 
 

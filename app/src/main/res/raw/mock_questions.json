@@ -10,11 +10,13 @@
     "question_id": 1
   },
   {
+
     "question_type" : "Numerical",
     "question_label" : "How much do you have saved?",
     "question_id": 8
   },
   {
+    "skip_expression":"($8 < 1000)",
     "question_type":"Single Select",
     "question_label":"Are you married?",
     "question_id": 4,
@@ -46,11 +48,6 @@
     "question_id": 5
   },
   {
-    "question_type":"Numerical",
-    "question_label":"What is your monthly salary?",
-    "question_id": 6
-  },
-  {
     "question_type":"Multi Select",
     "question_label": "What do you worry the most about?",
     "question_id": 7,
@@ -61,7 +58,27 @@
       "Getting Married",
       "Budgeting Better",
       "Investing",
+      "Earning More",
+      "Saving for Retirement",
+      "Paying Off Debt",
+      "Buying a Home",
+      "Getting Married",
+      "Budgeting Better",
+      "Investing",
       "Earning More"
     ]
+  },
+  {
+    "take_aways":[
+      {
+        "text":"Don't worry lots of people are in debt",
+        "action_button":"Good to know",
+        "expression": "CHECK_SELECTION(7, 1)"
+      }
+
+    ],
+    "question_type":"Numerical",
+    "question_label":"What is your monthly salary?",
+    "question_id": 6
   }
 ]
