@@ -10,34 +10,55 @@
     "question_id": 1
   },
   {
-    "question_type":"Textual",
-    "question_label":"What's your job title?",
-    "question_id": 2
+
+    "question_type" : "Numerical",
+    "question_label" : "How much do you have saved?",
+    "question_id": 8
   },
   {
+    "skip_expression":"($8 < 1000)",
     "question_type":"Single Select",
     "question_label":"Are you married?",
-    "question_id": 3,
+    "question_id": 4,
     "choices":[
       "Yes",
       "No"
-      ]
+    ]
+  },
+  {
+    "take_aways":[
+      {
+        "text":"Great job! Did you know most people in their 20’s only on average have $1k in their bank account",
+        "action_button":"OK",
+        "expression": "($8 > 20000) && ($1 < 30) && ($1 > 20) && CHECK_SELECTION(4, 1)"
+      },
+      {
+        "text":"Great job! Did you know most couples your age only have about $2k in their bank account",
+        "action_button":"OK",
+        "expression": "($8 > 30000) && ($1 < 30) && ($1 > 20) && CHECK_SELECTION(4, 0)"
+      }
+    ],
+    "question_type":"Textual",
+    "question_label":"What's your job title?",
+    "question_id": 3
   },
   {
     "question_type":"Textual",
     "question_label":"Where do you live?",
-    "question_id": 4
-  },
-  {
-    "question_type":"Numerical",
-    "question_label":"What is your monthly salary?",
     "question_id": 5
   },
   {
     "question_type":"Multi Select",
     "question_label": "What do you worry the most about?",
-    "question_id": 6,
+    "question_id": 7,
     "choices":[
+      "Saving for Retirement",
+      "Paying Off Debt",
+      "Buying a Home",
+      "Getting Married",
+      "Budgeting Better",
+      "Investing",
+      "Earning More",
       "Saving for Retirement",
       "Paying Off Debt",
       "Buying a Home",
@@ -46,5 +67,18 @@
       "Investing",
       "Earning More"
     ]
+  },
+  {
+    "take_aways":[
+      {
+        "text":"Don't worry lots of people are in debt",
+        "action_button":"Good to know",
+        "expression": "CHECK_SELECTION(7, 1)"
+      }
+
+    ],
+    "question_type":"Numerical",
+    "question_label":"What is your monthly salary?",
+    "question_id": 6
   }
 ]

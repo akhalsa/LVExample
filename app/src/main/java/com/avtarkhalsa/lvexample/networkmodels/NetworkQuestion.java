@@ -15,6 +15,10 @@ public class NetworkQuestion {
 
     ArrayList<String> choices; //may be null
 
+    ArrayList<NetworkTakeAway> take_aways;
+
+    String skip_expression;
+
     public String getQuestion_type() {
         return question_type;
     }
@@ -29,5 +33,12 @@ public class NetworkQuestion {
 
     public int getQuestion_id() {
         return question_id;
+    }
+
+    public ArrayList<NetworkTakeAway> getTake_aways() {
+        return take_aways;
+    }
+    public String getSkip_expression() {
+        return skip_expression;
     }
 }

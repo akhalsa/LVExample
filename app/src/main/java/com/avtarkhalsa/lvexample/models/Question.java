@@ -18,6 +18,10 @@ public class Question implements QuestionView.ViewModel {
 
     String welcome;
 
+    String dialogText;
+
+    String dialogActionText;
+
     public Question(NetworkQuestion nq){
         questionLabel = nq.getQuestion_label();
         questionType = QuestionType.fromString(nq.getQuestion_type());
@@ -30,24 +34,32 @@ public class Question implements QuestionView.ViewModel {
 
         response = null; //perhaps the responses will be synced against the server at some point. For now lets leave them local
         welcome = null;
+        dialogText = null;
     }
 
     //Values Managed by the QuestionManager
     public String getResponse() {
         return response;
     }
-
     public void setResponse(String response) {
         this.response = response;
     }
-
-
     public void setWelcome(String welcome) {
         this.welcome = welcome;
     }
+    public String getDialogText() {
+        return dialogText;
+    }
+    public void setDialogText(String dialogText) {
+        this.dialogText = dialogText;
+    }
+    public String getDialogActionText() {
+        return dialogActionText;
+    }
 
-
-    //Values that need to be read by
+    public void setDialogActionText(String dialogActionText) {
+        this.dialogActionText = dialogActionText;
+    }
     public int getId() {
         return id;
     }
