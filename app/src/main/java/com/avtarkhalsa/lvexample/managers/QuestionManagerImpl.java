@@ -149,6 +149,7 @@ public class QuestionManagerImpl implements QuestionManager {
 
                         }
                         question.setDialogText(dialogString);
+                        question.setDialogActionText(actionString);
                         return question;
                     }
                 });

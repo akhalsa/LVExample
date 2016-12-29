@@ -20,6 +20,8 @@ public class Question implements QuestionView.ViewModel {
 
     String dialogText;
 
+    String dialogActionText;
+
     public Question(NetworkQuestion nq){
         questionLabel = nq.getQuestion_label();
         questionType = QuestionType.fromString(nq.getQuestion_type());
@@ -50,6 +52,13 @@ public class Question implements QuestionView.ViewModel {
     }
     public void setDialogText(String dialogText) {
         this.dialogText = dialogText;
+    }
+    public String getDialogActionText() {
+        return dialogActionText;
+    }
+
+    public void setDialogActionText(String dialogActionText) {
+        this.dialogActionText = dialogActionText;
     }
     public int getId() {
         return id;

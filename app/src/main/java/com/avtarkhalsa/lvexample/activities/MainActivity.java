@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             if(question.getDialogText() != null){
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setMessage(question.getDialogText());
-                builder.setPositiveButton("Great", null);
+                builder.setPositiveButton(question.getDialogActionText(), null);
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
