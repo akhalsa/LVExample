@@ -118,10 +118,8 @@ public class QuestionManagerImpl implements QuestionManager {
     public Maybe<Question> popQuestion(Question q){
         //need to remove the most recent question from the list
         if(completedQuestionsLookup.containsKey(q.getId())){
-            //the current question was answered so well need to pop it first
-            Question qToRemove = questionStack.get(questionStack.size()-1);
-            questionStack.remove(qToRemove);
-            completedQuestionsLookup.remove(qToRemove.getId());
+            questionStack.remove(questionStack.size()-1);
+            completedQuestionsLookup.remove(q.getId());
         }
 
         return Maybe.just(questionStack.get(questionStack.size()-1));
