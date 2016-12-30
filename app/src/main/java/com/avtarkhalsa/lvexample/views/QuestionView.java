@@ -171,6 +171,7 @@ public class QuestionView extends LinearLayout {
     }
 
     private void clearAllInputs(){
+        singleSelectInput.clearCheck();
         singleSelectInput.removeAllViews();
         numericalInput.setText("");
         textualInput.setText("");

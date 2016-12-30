@@ -47,15 +47,19 @@ public class MainActivity extends AppCompatActivity {
     Button nextButton;
     private Question currentQuestion;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
     private String invalidInputText = "Invalid Input";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((LVExampleApplication) getApplication()).getAppComponent().inject(this);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         nextButton.setEnabled(false);
         questionManager.loadFirstQuestion()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -113,6 +117,14 @@ public class MainActivity extends AppCompatActivity {
             nextButton.setEnabled(true);
             questionView.bindToQuestion(question);
             EditText currentInput = questionView.getCurrentInput();
+            if(question.getCanGoBack()){
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
+            }else{
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                getSupportActionBar().setDisplayShowHomeEnabled(false);
+            }
+
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             if(currentInput != null){
                 imm.showSoftInput(currentInput, InputMethodManager.SHOW_IMPLICIT);
@@ -155,14 +167,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                questionManager.popQuestion(currentQuestion)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(questionMaybeObserver);
+
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
