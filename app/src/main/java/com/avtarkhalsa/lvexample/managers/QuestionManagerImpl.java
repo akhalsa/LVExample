@@ -10,6 +10,8 @@ import com.fathzer.soft.javaluator.BracketPair;
 import com.fathzer.soft.javaluator.DoubleEvaluator;
 import com.fathzer.soft.javaluator.Operator;
 import com.fathzer.soft.javaluator.Parameters;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +40,7 @@ public class QuestionManagerImpl implements QuestionManager {
     private ReplaySubject<NetworkQuestion> networkStream;
 
     private HashMap<Integer, Question> completedQuestionsLookup;
+    private ArrayList<Question> questionStack;
     public QuestionManagerImpl(APIInterface api){
         Observable<NetworkQuestion> networkObservable = api.getAllQuestions()
                 .subscribeOn(Schedulers.io())
@@ -50,6 +53,7 @@ public class QuestionManagerImpl implements QuestionManager {
         networkStream = ReplaySubject.create();
         networkObservable.subscribe(networkStream);
         completedQuestionsLookup = new HashMap<>();
+        questionStack = new ArrayList<>();
         Parameters params = new Parameters();
         params.add(AND);
         params.add(OR);
@@ -62,6 +66,7 @@ public class QuestionManagerImpl implements QuestionManager {
 
     public Maybe<Question> loadFirstQuestion(){
         return networkStream
+                .subscribeOn(Schedulers.io())
                 .elementAt((long)0)
                 .map(new Function<NetworkQuestion, Question>() {
                     @Override
@@ -109,9 +114,22 @@ public class QuestionManagerImpl implements QuestionManager {
         return loadNextQuestion(question);
     }
 
-    private Maybe<Question> loadNextQuestion(Question q){
-        completedQuestionsLookup.put(q.getId(), q);
+    @Override
+    public Maybe<Question> popQuestion(Question q){
+        //need to remove the most recent question from the list
+        if(completedQuestionsLookup.containsKey(q.getId())){
+            //the current question was answered so well need to pop it first
+            Question qToRemove = questionStack.get(questionStack.size()-1);
+            questionStack.remove(qToRemove);
+            completedQuestionsLookup.remove(qToRemove.getId());
+        }
+
+        return Maybe.just(questionStack.get(questionStack.size()-1));
+    }
+
+    private Maybe<Question> loadQuestionWithPosition(int position){
         return networkStream
+                .subscribeOn(Schedulers.io())
                 .filter(new Predicate<NetworkQuestion>() {
                     @Override
                     public boolean test(NetworkQuestion networkQuestion) throws Exception {
@@ -124,7 +142,7 @@ public class QuestionManagerImpl implements QuestionManager {
                         return true;
                     }
                 })
-                .elementAt(completedQuestionsLookup.size())
+                .elementAt(position)
                 .map(new Function<NetworkQuestion, Question>() {
                     @Override
                     public Question apply(NetworkQuestion networkQuestion) throws Exception {
@@ -150,9 +168,15 @@ public class QuestionManagerImpl implements QuestionManager {
                         }
                         question.setDialogText(dialogString);
                         question.setDialogActionText(actionString);
+                        question.setCanGoBack(questionStack.size() > 0);
                         return question;
                     }
                 });
+    }
+    private Maybe<Question> loadNextQuestion(Question q){
+        completedQuestionsLookup.put(q.getId(), q);
+        questionStack.add(q);
+        return loadQuestionWithPosition(completedQuestionsLookup.size());
     }
 
     private class SimpleBooleanEvaluator extends DoubleEvaluator{

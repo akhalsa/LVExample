@@ -10,6 +10,8 @@ import io.reactivex.Maybe;
  * Created by avtarkhalsa on 12/25/16.
  */
 public interface QuestionManager {
+    Maybe<Question> popQuestion(Question q);
+
     class BadResponseException extends Exception{};
 
     Maybe<Question> loadFirstQuestion();

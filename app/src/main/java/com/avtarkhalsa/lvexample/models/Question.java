@@ -22,6 +22,10 @@ public class Question implements QuestionView.ViewModel {
 
     String dialogActionText;
 
+
+
+    boolean canGoBack;
+
     public Question(NetworkQuestion nq){
         questionLabel = nq.getQuestion_label();
         questionType = QuestionType.fromString(nq.getQuestion_type());
@@ -35,6 +39,7 @@ public class Question implements QuestionView.ViewModel {
         response = null; //perhaps the responses will be synced against the server at some point. For now lets leave them local
         welcome = null;
         dialogText = null;
+        canGoBack = false;
     }
 
     //Values Managed by the QuestionManager
@@ -50,6 +55,15 @@ public class Question implements QuestionView.ViewModel {
     public String getDialogText() {
         return dialogText;
     }
+
+    public boolean getCanGoBack() {
+        return canGoBack;
+    }
+
+    public void setCanGoBack(boolean canGoBack) {
+        this.canGoBack = canGoBack;
+    }
+
     public void setDialogText(String dialogText) {
         this.dialogText = dialogText;
     }
