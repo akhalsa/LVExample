@@ -25,11 +25,15 @@ import com.avtarkhalsa.lvexample.models.Question;
 import com.avtarkhalsa.lvexample.views.QuestionView;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.MaybeObserver;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.next_button)
     Button nextButton;
-    private Question currentQuestion;
+    private List<Question> currentQuestions;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -61,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         nextButton.setEnabled(false);
-        questionManager.loadFirstQuestion()
+        questionManager.loadNextQuestions()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(questionMaybeObserver);
 
@@ -69,44 +73,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void nextClicked(View v){
-        //first we need to retrieve the current value from the View
-        switch(currentQuestion.getType()){
-            case Textual:
-                String response = questionView.getTextInput();
-                questionManager
-                        .setStringResponseForQuestion(response, currentQuestion)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(questionMaybeObserver);
-                break;
-            case Numerical:
-                Double doubleResponse = questionView.getNumericalInput();
-                questionManager
-                        .setNumberResponseForQuestion(doubleResponse, currentQuestion)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(questionMaybeObserver);
-                break;
-            case SingleSelect:
-                questionManager
-                        .setChoicesResponseForQuestion(questionView.getSingleSelection(), currentQuestion)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(questionMaybeObserver);
-                break;
-            case MultiSelect:
-                questionManager
-                        .setChoicesResponseForQuestion(questionView.getMultiSelections(), currentQuestion)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(questionMaybeObserver);
-                break;
-        }
+        //first we would populate all the questions using their associated question view
+
+        questionManager
+                .loadNextQuestions()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(questionMaybeObserver);
     }
-    private MaybeObserver<Question> questionMaybeObserver = new MaybeObserver<Question>() {
+
+    private SingleObserver<List<Question>> questionMaybeObserver = new SingleObserver<List<Question>>() {
         @Override
         public void onSubscribe(Disposable d) {}
 
         @Override
-        public void onSuccess(Question question) {
+        public void onSuccess(List<Question> questions) {
             //this is the code to run any time we get a new question
             //if we were using RetroLambda we would want to use a method reference instead
+
+            Question question = questions.get(0);
+
             if(question.getDialogText() != null){
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setMessage(question.getDialogText());
@@ -133,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                         if (actionId == EditorInfo.IME_ACTION_NEXT){
-                            nextClicked(nextButton);
+                            //nextClicked(nextButton);
                             return true;
                         }else{
                             return false;
@@ -143,18 +128,17 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 imm.hideSoftInputFromWindow(mainCoordinator.getWindowToken(), 0);
             }
-            currentQuestion = question;
+            currentQuestions = questions;
         }
 
         @Override
         public void onError(Throwable e) {
             if(e instanceof QuestionManager.BadResponseException){
                 Toast.makeText(MainActivity.this, invalidInputText, Toast.LENGTH_SHORT).show();
+            }else if (e instanceof  QuestionManager.EndOfListReachedException){
+                Toast.makeText(MainActivity.this, "YOU HAVE REACHED THE END OF THE QUESTION LIST", Toast.LENGTH_SHORT).show();
             }
         }
-
-        @Override
-        public void onComplete() {}
     };
 
 
@@ -176,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                questionManager.popQuestion(currentQuestion)
+                questionManager.popQuestionPage(currentQuestions)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(questionMaybeObserver);
 

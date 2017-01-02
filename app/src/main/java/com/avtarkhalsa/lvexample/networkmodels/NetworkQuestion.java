@@ -13,6 +13,8 @@ public class NetworkQuestion {
 
     int question_id;
 
+    int page_weight;
+
     ArrayList<String> choices; //may be null
 
     ArrayList<NetworkTakeAway> take_aways;
@@ -41,4 +43,9 @@ public class NetworkQuestion {
     public String getSkip_expression() {
         return skip_expression;
     }
+
+    public int getPageWeight() {
+        return page_weight;
+    }
+
 }
