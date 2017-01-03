@@ -258,6 +258,7 @@ public class QuestionManagerImpl implements QuestionManager {
         //we shouldn't need to do a try catch here because we already broke out of the method if the current
         //questionPage didnt have a back button
         currentQuestionWeight = networkStream
+                .sorted(sortIntoPages)
                 .filter(new Predicate<NetworkQuestion>() {
                     @Override
                     public boolean test(NetworkQuestion networkQuestion) throws Exception {

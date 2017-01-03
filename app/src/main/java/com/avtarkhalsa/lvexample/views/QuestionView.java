@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -58,6 +59,10 @@ public class QuestionView extends LinearLayout {
         super(context, attrs);
         init();
     }
+    public QuestionView(Context context) {
+        super(context);
+        init();
+    }
 
     public void bindToQuestion(ViewModel vm){
         //lets animate the question transition
@@ -80,16 +85,6 @@ public class QuestionView extends LinearLayout {
                 populateMultiSelect(vm);
                 break;
 
-        }
-    }
-
-    public EditText getCurrentInput(){
-        if(textualInput.getVisibility() == View.VISIBLE){
-            return textualInput;
-        }else if (numericalInput.getVisibility() == View.VISIBLE) {
-            return numericalInput;
-        }else{
-            return null;
         }
     }
 
