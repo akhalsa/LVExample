@@ -19,11 +19,4 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    <com.avtarkhalsa.lvexample.views.QuestionView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/question_view">
-
-    </com.avtarkhalsa.lvexample.views.QuestionView>
 </RelativeLayout>

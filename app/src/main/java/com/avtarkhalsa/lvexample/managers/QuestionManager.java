@@ -2,11 +2,8 @@ package com.avtarkhalsa.lvexample.managers;
 
 import com.avtarkhalsa.lvexample.models.Question;
 import com.avtarkhalsa.lvexample.models.QuestionPage;
-import com.avtarkhalsa.lvexample.views.QuestionView;
+import com.avtarkhalsa.lvexample.views.QuestionListAdapter;
 
-import java.util.List;
-
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 /**
@@ -22,6 +19,6 @@ public interface QuestionManager {
     Single<QuestionPage> loadNextQuestions();
 
     Single<QuestionPage> popQuestionPage(QuestionPage currentPage);
-
-    void setQuestionResponseWithQuestionView(Question q, QuestionView qv) throws BadResponseException;
+    String getStringEncoding(Question q, QuestionListAdapter.QuestionViewHolder qvh) throws BadResponseException;
+    void setQuestionResponse(Question q, String Response);
 }

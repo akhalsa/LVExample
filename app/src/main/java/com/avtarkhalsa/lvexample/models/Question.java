@@ -1,7 +1,6 @@
 package com.avtarkhalsa.lvexample.models;
 
 import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
-import com.avtarkhalsa.lvexample.views.QuestionView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
 /**
  * Created by avtarkhalsa on 12/25/16.
  */
-public class Question implements QuestionView.ViewModel {
+public class Question  {
     String questionLabel;
     QuestionType questionType;
     String response;

@@ -8,17 +8,14 @@ import com.avtarkhalsa.lvexample.models.QuestionPage;
 import com.avtarkhalsa.lvexample.networking.APIInterface;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkTakeAway;
-import com.avtarkhalsa.lvexample.views.QuestionView;
+import com.avtarkhalsa.lvexample.views.QuestionListAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -179,38 +176,44 @@ public class QuestionManagerImpl implements QuestionManager {
                     }
                 });
     }
-
-    public void setQuestionResponseWithQuestionView(Question question, QuestionView questionView) throws BadResponseException{
+    @Override
+    public String getStringEncoding(Question question, QuestionListAdapter.QuestionViewHolder qvh) throws BadResponseException {
+        String encoded = "";
         switch(question.getType()){
             case Textual:
-                String response = questionView.getTextInput();
+                String response = qvh.getTextInput().getText().toString();
                 if(response.isEmpty()){
                     throw new BadResponseException();
                 }
-                question.setResponse(response);
+                encoded = response;
                 break;
             case Numerical:
-                Double doubleResponse = questionView.getNumericalInput();
+                Double doubleResponse = Double.valueOf(qvh.getNumericalInput().getText().toString());
                 if(doubleResponse == null){
                     throw new BadResponseException();
                 }
-                question.setResponse(doubleResponse.toString());
+                encoded = doubleResponse.toString();
                 break;
             case SingleSelect:
-                List<Integer> selection = questionView.getSingleSelection();
+                List<Integer> selection = qvh.getSingleSelection();
                 if(selection.size() == 0){
                     throw new BadResponseException();
                 }
-                question.setResponse(convertSelectionsToResponse(selection));
+                encoded = convertSelectionsToResponse(selection);
                 break;
             case MultiSelect:
-                List<Integer> selections = questionView.getMultiSelections();
+                List<Integer> selections = qvh.getMultiSelections();
                 if(selections.size() == 0){
                     throw new BadResponseException();
                 }
-                question.setResponse(convertSelectionsToResponse(selections));
+                encoded = convertSelectionsToResponse(selections);
                 break;
         }
+        return encoded;
+    }
+
+    public void setQuestionResponse(Question question, String response){
+        question.setResponse(response);
         completedQuestionsLookup.put(question.getId(), question);
     }
 
