@@ -32,7 +32,6 @@ public class QuestionView extends LinearLayout {
         String getLabel();
         QuestionType getType();
         List<String> getChoices();
-        String getWelcome();
     }
 
     @BindView(R.id.question_label)
@@ -81,10 +80,6 @@ public class QuestionView extends LinearLayout {
                 populateMultiSelect(vm);
                 break;
 
-        }
-        if(vm.getWelcome() != null){
-            welcome_label.setVisibility(View.VISIBLE);
-            welcome_label.setText(vm.getWelcome());
         }
     }
 

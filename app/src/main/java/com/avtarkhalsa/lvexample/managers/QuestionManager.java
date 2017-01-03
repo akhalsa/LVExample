@@ -1,6 +1,7 @@
 package com.avtarkhalsa.lvexample.managers;
 
 import com.avtarkhalsa.lvexample.models.Question;
+import com.avtarkhalsa.lvexample.models.QuestionPage;
 import com.avtarkhalsa.lvexample.views.QuestionView;
 
 import java.util.List;
@@ -18,9 +19,9 @@ public interface QuestionManager {
 
     class EndOfListReachedException extends Exception{};
 
-    Single<List<Question>> loadNextQuestions();
+    Single<QuestionPage> loadNextQuestions();
 
-    Single<List<Question>> popQuestionPage(List<Question> currentQuestions);
+    Single<QuestionPage> popQuestionPage(QuestionPage currentPage);
 
     void setQuestionResponseWithQuestionView(Question q, QuestionView qv) throws BadResponseException;
 }

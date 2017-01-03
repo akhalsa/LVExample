@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.avtarkhalsa.lvexample.expressions.SimpleBooleanEvaluator;
 import com.avtarkhalsa.lvexample.models.Question;
+import com.avtarkhalsa.lvexample.models.QuestionPage;
 import com.avtarkhalsa.lvexample.networking.APIInterface;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkQuestion;
 import com.avtarkhalsa.lvexample.networkmodels.NetworkTakeAway;
@@ -101,10 +102,6 @@ public class QuestionManagerImpl implements QuestionManager {
         public Question apply(NetworkQuestion networkQuestion) throws Exception {
             //this is where we append the label to display at the top
             Question question = new Question(networkQuestion);
-            if(completedQuestionsLookup.get(0) != null){
-                question.setWelcome("Hi "+completedQuestionsLookup.get(0).getResponse()+"! Let’s talk about...");
-            }
-
             //next we need to analyse the NetworkQuestion
             String dialogString = null;
             String actionString = null;
@@ -119,9 +116,6 @@ public class QuestionManagerImpl implements QuestionManager {
                 }
 
             }
-            question.setDialogText(dialogString);
-            question.setDialogActionText(actionString);
-            question.setCanGoBack(completedQuestionsLookup.size() > 0);
             return question;
         }
     };
@@ -171,6 +165,21 @@ public class QuestionManagerImpl implements QuestionManager {
         return sb.toString();
     }
 
+    private Single<QuestionPage> getCurrentPageOfQuestions(){
+        return networkStream
+                .subscribeOn(Schedulers.io())
+                .filter(removeQuestionsNotOnCurrentPage)
+                .filter(removeSkippableQuestions)
+                .map(mapNetworkQuestionToQuestion)
+                .toList()
+                .map(new Function<List<Question>, QuestionPage>() {
+                    @Override
+                    public QuestionPage apply(List<Question> questions) throws Exception {
+                        return new QuestionPage(questions, currentQuestionWeight, completedQuestionsLookup.size() > 0);
+                    }
+                });
+    }
+
     public void setQuestionResponseWithQuestionView(Question question, QuestionView questionView) throws BadResponseException{
         switch(question.getType()){
             case Textual:
@@ -206,38 +215,61 @@ public class QuestionManagerImpl implements QuestionManager {
     }
 
     @Override
-    public Single<List<Question>> loadNextQuestions(){
+    public Single<QuestionPage> loadNextQuestions(){
         //check to make sure the current page is finished
         if(remainingQuestionsOnCurrentPage().size() > 0){
-            return Single.defer(new Callable<SingleSource<List<Question>>>() {
+            return Single.defer(new Callable<SingleSource<QuestionPage>>() {
                 @Override
-                public SingleSource<List<Question>> call() throws Exception {
+                public SingleSource<QuestionPage> call() throws Exception {
                     throw new BadResponseException();
                 }
             });
         }
         incrementWeight();
         if (finished) {
-            return Single.defer(new Callable<SingleSource<List<Question>>>() {
+            return Single.defer(new Callable<SingleSource<QuestionPage>>() {
                 @Override
-                public SingleSource<List<Question>> call() throws Exception {
+                public SingleSource<QuestionPage> call() throws Exception {
                     throw new EndOfListReachedException();
                 }
             });
         }
-        return networkStream
-                .subscribeOn(Schedulers.io())
-                .filter(removeQuestionsNotOnCurrentPage)
-                .filter(removeSkippableQuestions)
-                .map(mapNetworkQuestionToQuestion)
-                .toList();
+        return getCurrentPageOfQuestions();
+
     }
     @Override
-    public Single<List<Question>> popQuestionPage(List<Question> currentQuestions) {
-        return null;
+    public Single<QuestionPage> popQuestionPage(final QuestionPage questionPage) {
+        if(!questionPage.hasBackButton()){
+            return Single.defer(new Callable<SingleSource<QuestionPage>>() {
+                @Override
+                public SingleSource<QuestionPage> call() throws Exception {
+                    throw new EndOfListReachedException();
+                }
+            });
+        }
+        //first lets remove this whole page from the completed questions array
+        //note some questions may not be in the array yet
+        for(Question q : questionPage.getQuestions()){
+            if(completedQuestionsLookup.containsKey(q.getId())){
+                completedQuestionsLookup.remove(q.getId());
+            }
+        }
+
+        //we shouldn't need to do a try catch here because we already broke out of the method if the current
+        //questionPage didnt have a back button
+        currentQuestionWeight = networkStream
+                .filter(new Predicate<NetworkQuestion>() {
+                    @Override
+                    public boolean test(NetworkQuestion networkQuestion) throws Exception {
+                        if(networkQuestion.getPageWeight() >= questionPage.getPageWeight()){
+                            return false;
+                        }
+                        return true;
+                    }
+                })
+                .blockingFirst()
+                .getPageWeight();
+        return getCurrentPageOfQuestions();
     }
-
-
-
 }
 
