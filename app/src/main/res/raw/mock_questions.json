@@ -6,15 +6,16 @@
     "question_id": 0
   },
   {
+    "question_heading": "Hi $0! Lets chat about ",
     "question_type" : "Numerical",
-    "question_label" : "What's your age?",
+    "question_label" : "your age?",
     "page_weight": 2,
     "question_id": 1
   },
   {
-
+    "question_heading": "Hi $0! Lets chat about ",
     "question_type" : "Numerical",
-    "question_label" : "How much do you have saved?",
+    "question_label" : "How much you have saved?",
     "page_weight": 3,
     "question_id": 8
   },

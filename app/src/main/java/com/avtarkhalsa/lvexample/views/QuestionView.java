@@ -33,6 +33,7 @@ public class QuestionView extends LinearLayout {
         String getLabel();
         QuestionType getType();
         List<String> getChoices();
+        String getWelcome();
     }
 
     @BindView(R.id.question_label)
@@ -66,9 +67,14 @@ public class QuestionView extends LinearLayout {
 
     public void bindToQuestion(ViewModel vm){
         //lets animate the question transition
+
         question_label.setText(vm.getLabel());
         hideAllInputs();
         clearAllInputs();
+        if(vm.getWelcome() != null){
+            welcome_label.setVisibility(View.VISIBLE);
+            welcome_label.setText(vm.getWelcome());
+        }
         switch (vm.getType()){
             case Textual:
                 textualInput.setVisibility(View.VISIBLE);

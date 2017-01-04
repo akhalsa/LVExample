@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class Question implements QuestionView.ViewModel {
     String questionLabel;
+    String welcomeLabel;
     QuestionType questionType;
     String response;
     int id;
@@ -45,6 +46,9 @@ public class Question implements QuestionView.ViewModel {
         return dialogText;
     }
 
+    public void setWelcomeLabel(String newLabel){
+        welcomeLabel = newLabel;
+    }
     public void setDialogText(String dialogText, String actionText) {
         this.dialogText = dialogText;
         this.dialogActionText = actionText;
@@ -66,6 +70,11 @@ public class Question implements QuestionView.ViewModel {
     }
     public List<String> getChoices(){
         return choices;
+    }
+
+    @Override
+    public String getWelcome() {
+        return welcomeLabel;
     }
 
 }

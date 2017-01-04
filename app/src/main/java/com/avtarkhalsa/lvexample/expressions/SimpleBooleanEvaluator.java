@@ -130,4 +130,32 @@ public class SimpleBooleanEvaluator extends DoubleEvaluator {
         }
         return false;
     }
+
+    public boolean canSwap(String expression, HashMap<Integer, Question> answeredQuestions){
+        Pattern p = Pattern.compile("\\$(\\d+)");
+        Matcher m = p.matcher(expression);
+        while(m.find()){
+            Integer id = Integer.valueOf(m.group(1));
+            if(!answeredQuestions.containsKey(id)){
+                return false;
+            }
+        }
+        return true;
+    }
+    public String swapTextValuesIntoExpression(String expression, HashMap<Integer, Question> answeredQuestions){
+        Pattern p = Pattern.compile("\\$(\\d+)");
+        Matcher m = p.matcher(expression);
+        HashMap<String, String> replacements = new HashMap<>();
+        while(m.find()){
+            Integer id = Integer.valueOf(m.group(1));
+            String newVal = answeredQuestions.get(id).getResponse();
+            replacements.put(m.group(1), newVal);
+        }
+
+        for(String qId : replacements.keySet()){
+            p = Pattern.compile("\\$"+qId);
+            expression = p.matcher(expression).replaceAll(replacements.get(qId));
+        }
+        return expression;
+    }
 }

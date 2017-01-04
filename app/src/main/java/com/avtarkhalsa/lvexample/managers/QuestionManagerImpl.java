@@ -102,8 +102,13 @@ public class QuestionManagerImpl implements QuestionManager {
         public Question apply(NetworkQuestion networkQuestion) throws Exception {
             //this is where we append the label to display at the top
             Question question = new Question(networkQuestion);
-            //next we need to analyse the NetworkQuestion
-
+            if((networkQuestion.getQuestionHeading() != null) &&
+                    (simpleBooleanEvaluator.canSwap(networkQuestion.getQuestionHeading(), completedQuestionsLookup))){
+                String sectionHeader = simpleBooleanEvaluator.swapTextValuesIntoExpression(networkQuestion.getQuestionHeading(), completedQuestionsLookup);
+                question.setWelcomeLabel(sectionHeader);
+            }else{
+                question.setWelcomeLabel(null);
+            }
             return question;
         }
     };
