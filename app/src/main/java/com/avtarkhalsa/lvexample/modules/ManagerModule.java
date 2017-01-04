@@ -1,8 +1,12 @@
 package com.avtarkhalsa.lvexample.modules;
 
+import com.avtarkhalsa.lvexample.expressions.SimpleBooleanEvaluator;
 import com.avtarkhalsa.lvexample.managers.QuestionManager;
 import com.avtarkhalsa.lvexample.managers.QuestionManagerImpl;
+import com.avtarkhalsa.lvexample.models.Question;
 import com.avtarkhalsa.lvexample.networking.APIInterface;
+
+import java.util.HashMap;
 
 import javax.inject.Singleton;
 
@@ -16,8 +20,13 @@ import dagger.Provides;
 public class ManagerModule {
     @Provides
     @Singleton
-    QuestionManager provideQuestionManager(APIInterface apiInterface){
-        return new QuestionManagerImpl(apiInterface);
+    SimpleBooleanEvaluator provideSimpleBooleanEvaluator(){
+        return new SimpleBooleanEvaluator();
+    }
+    @Provides
+    @Singleton
+    QuestionManager provideQuestionManager(APIInterface apiInterface, SimpleBooleanEvaluator sbe){
+        return new QuestionManagerImpl(apiInterface, sbe, new HashMap<Integer, Question>(), 0);
     }
 
 }

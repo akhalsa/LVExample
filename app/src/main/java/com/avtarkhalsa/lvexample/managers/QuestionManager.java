@@ -1,24 +1,27 @@
 package com.avtarkhalsa.lvexample.managers;
 
 import com.avtarkhalsa.lvexample.models.Question;
+import com.avtarkhalsa.lvexample.models.QuestionPage;
+import com.avtarkhalsa.lvexample.views.QuestionView;
 
 import java.util.List;
 
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 /**
  * Created by avtarkhalsa on 12/25/16.
  */
 public interface QuestionManager {
-    Maybe<Question> popQuestion(Question q);
+
 
     class BadResponseException extends Exception{};
 
-    Maybe<Question> loadFirstQuestion();
+    class EndOfListReachedException extends Exception{};
 
-    Maybe<Question> setStringResponseForQuestion(String response, Question question);
+    Single<QuestionPage> loadNextQuestions();
 
-    Maybe<Question> setNumberResponseForQuestion(Double response, Question question);
+    Single<QuestionPage> popQuestionPage(QuestionPage currentPage);
 
-    Maybe<Question> setChoicesResponseForQuestion(List<Integer> choice_indicies, Question question);
+    void setQuestionResponseWithQuestionView(Question q, QuestionView qv) throws BadResponseException;
 }

@@ -11,7 +11,11 @@ public class NetworkQuestion {
 
     String question_label;
 
+    String question_heading;
+
     int question_id;
+
+    int page_weight;
 
     ArrayList<String> choices; //may be null
 
@@ -41,4 +45,14 @@ public class NetworkQuestion {
     public String getSkip_expression() {
         return skip_expression;
     }
+
+    public String getQuestionHeading() {
+        return question_heading;
+    }
+
+
+    public int getPageWeight() {
+        return page_weight;
+    }
+
 }
