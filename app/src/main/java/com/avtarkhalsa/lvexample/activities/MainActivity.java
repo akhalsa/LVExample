@@ -109,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
 
             currentQuestions = questionPage;
             nextButton.setEnabled(true);
-            /*questionView.bindToQuestion(question);
-            EditText currentInput = questionView.getCurrentInput();*/
             if(questionPage.hasBackButton()){
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -131,25 +129,6 @@ public class MainActivity extends AppCompatActivity {
                 qv.setLayoutParams(params);
                 questionsLinearLayout.addView(qv);
             }
-
-            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            /*if(currentInput != null){
-                imm.showSoftInput(currentInput, InputMethodManager.SHOW_IMPLICIT);
-                currentInput.requestFocus();
-                currentInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_NEXT){
-                            //nextClicked(nextButton);
-                            return true;
-                        }else{
-                            return false;
-                        }
-                    }
-                });
-            }else{
-                imm.hideSoftInputFromWindow(mainCoordinator.getWindowToken(), 0);
-            }*/
         }
 
         @Override
@@ -173,12 +152,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 questionManager.popQuestionPage(currentQuestions)
