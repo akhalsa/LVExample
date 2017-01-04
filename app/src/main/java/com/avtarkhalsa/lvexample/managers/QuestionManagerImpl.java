@@ -103,19 +103,7 @@ public class QuestionManagerImpl implements QuestionManager {
             //this is where we append the label to display at the top
             Question question = new Question(networkQuestion);
             //next we need to analyse the NetworkQuestion
-            String dialogString = null;
-            String actionString = null;
-            if(networkQuestion.getTake_aways() != null) {
-                for (NetworkTakeAway nta : networkQuestion.getTake_aways()) {
-                    Boolean showDialog = simpleBooleanEvaluator.evaluateExpression(nta.getLogic(), completedQuestionsLookup);
-                    if(showDialog) {
-                        dialogString = nta.getText();
-                        actionString = nta.getAction_button();
-                        break;
-                    }
-                }
 
-            }
             return question;
         }
     };
@@ -165,26 +153,11 @@ public class QuestionManagerImpl implements QuestionManager {
         return sb.toString();
     }
 
-    private Single<QuestionPage> getCurrentPageOfQuestions(){
-        return networkStream
-                .subscribeOn(Schedulers.io())
-                .filter(removeQuestionsNotOnCurrentPage)
-                .filter(removeSkippableQuestions)
-                .map(mapNetworkQuestionToQuestion)
-                .toList()
-                .map(new Function<List<Question>, QuestionPage>() {
-                    @Override
-                    public QuestionPage apply(List<Question> questions) throws Exception {
-                        return new QuestionPage(questions, currentQuestionWeight, completedQuestionsLookup.size() > 0);
-                    }
-                });
-    }
-
-    public void setQuestionResponseWithQuestionView(Question question, QuestionView questionView) throws BadResponseException{
+    public void setQuestionResponseWithQuestionView(final Question question, QuestionView questionView) throws BadResponseException{
         switch(question.getType()){
             case Textual:
                 String response = questionView.getTextInput();
-                if(response.isEmpty()){
+                if(response == null){
                     throw new BadResponseException();
                 }
                 question.setResponse(response);
@@ -198,7 +171,7 @@ public class QuestionManagerImpl implements QuestionManager {
                 break;
             case SingleSelect:
                 List<Integer> selection = questionView.getSingleSelection();
-                if(selection.size() == 0){
+                if(selection == null){
                     throw new BadResponseException();
                 }
                 question.setResponse(convertSelectionsToResponse(selection));
@@ -212,6 +185,32 @@ public class QuestionManagerImpl implements QuestionManager {
                 break;
         }
         completedQuestionsLookup.put(question.getId(), question);
+        String dialogString = null;
+        String actionString = null;
+        NetworkQuestion networkQuestion = networkStream
+                .filter(new Predicate<NetworkQuestion>() {
+                    @Override
+                    public boolean test(NetworkQuestion networkQuestion) throws Exception {
+                        if(question.getId() != networkQuestion.getQuestion_id()){
+                            return false;
+                        }
+                        return true;
+                    }
+                })
+                .blockingFirst();
+
+
+        if(networkQuestion.getTake_aways() != null) {
+            for (NetworkTakeAway nta : networkQuestion.getTake_aways()) {
+                Boolean showDialog = simpleBooleanEvaluator.evaluateExpression(nta.getLogic(), completedQuestionsLookup);
+                if(showDialog) {
+                    dialogString = nta.getText();
+                    actionString = nta.getAction_button();
+                    break;
+                }
+            }
+        }
+        question.setDialogText(dialogString, actionString);
     }
 
     @Override
@@ -234,7 +233,18 @@ public class QuestionManagerImpl implements QuestionManager {
                 }
             });
         }
-        return getCurrentPageOfQuestions();
+        return networkStream
+                .subscribeOn(Schedulers.io())
+                .filter(removeQuestionsNotOnCurrentPage)
+                .filter(removeSkippableQuestions)
+                .map(mapNetworkQuestionToQuestion)
+                .toList()
+                .map(new Function<List<Question>, QuestionPage>() {
+                    @Override
+                    public QuestionPage apply(List<Question> questions) throws Exception {
+                        return new QuestionPage(questions, currentQuestionWeight, completedQuestionsLookup.size() > 0);
+                    }
+                });
 
     }
     @Override
@@ -246,13 +256,6 @@ public class QuestionManagerImpl implements QuestionManager {
                     throw new EndOfListReachedException();
                 }
             });
-        }
-        //first lets remove this whole page from the completed questions array
-        //note some questions may not be in the array yet
-        for(Question q : questionPage.getQuestions()){
-            if(completedQuestionsLookup.containsKey(q.getId())){
-                completedQuestionsLookup.remove(q.getId());
-            }
         }
 
         //we shouldn't need to do a try catch here because we already broke out of the method if the current
@@ -268,9 +271,34 @@ public class QuestionManagerImpl implements QuestionManager {
                         return true;
                     }
                 })
-                .blockingFirst()
+                .filter(removeSkippableQuestions)
+                .blockingLast()
                 .getPageWeight();
-        return getCurrentPageOfQuestions();
+
+
+
+        return networkStream
+                .subscribeOn(Schedulers.io())
+                .map(new Function<NetworkQuestion, NetworkQuestion>() {
+                    @Override
+                    public NetworkQuestion apply(NetworkQuestion networkQuestion) throws Exception {
+                        if((networkQuestion.getPageWeight() >= currentQuestionWeight)
+                                && (completedQuestionsLookup.containsKey(networkQuestion.getQuestion_id()))){
+                            completedQuestionsLookup.remove(networkQuestion.getQuestion_id());
+                        }
+                        return networkQuestion;
+                    }
+                })
+                .filter(removeQuestionsNotOnCurrentPage)
+                .filter(removeSkippableQuestions)
+                .map(mapNetworkQuestionToQuestion)
+                .toList()
+                .map(new Function<List<Question>, QuestionPage>() {
+                    @Override
+                    public QuestionPage apply(List<Question> questions) throws Exception {
+                        return new QuestionPage(questions, currentQuestionWeight, completedQuestionsLookup.size() > 0);
+                    }
+                });
     }
 }
 

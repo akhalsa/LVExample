@@ -2,6 +2,7 @@ package com.avtarkhalsa.lvexample.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -70,15 +71,26 @@ public class MainActivity extends AppCompatActivity {
     public void nextClicked(View v){
         //first we would populate all the questions using their associated question view
         int count = questionsLinearLayout.getChildCount();
+        Question hasTakeAway = null;
         for(int i = 0; i<count; i++){
             QuestionView qv = (QuestionView) questionsLinearLayout.getChildAt(i);
             Question q = currentQuestions.getQuestions().get(i);
             try{
                 questionManager.setQuestionResponseWithQuestionView(q, qv);
+                if(q.getDialogText() != null){
+                    hasTakeAway = q;
+                }
             } catch (QuestionManager.BadResponseException bre){
                 Toast.makeText(MainActivity.this, invalidInputText, Toast.LENGTH_SHORT).show();
                 return;
             }
+        }
+        if(hasTakeAway != null){
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage(hasTakeAway.getDialogText());
+            builder.setPositiveButton(hasTakeAway.getDialogActionText(), null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
         questionManager
                 .loadNextQuestions()
